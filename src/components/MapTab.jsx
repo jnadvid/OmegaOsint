@@ -31,7 +31,7 @@ const DEFAULT_CENTER = { lat: 20, lng: 0 };
 const DEFAULT_ZOOM = 2;
 
 function pinDisplayLabel(pin) {
-  return pin.label?.trim() || pin.address?.trim() || 'Unnamed pin';
+  return pin.label?.trim() || pin.address?.trim() || 'Punto sin nombre';
 }
 
 function pinSecondaryLabel(pin) {
@@ -45,7 +45,7 @@ export default function MapTab({ visible = true }) {
   if (!loaded) {
     return (
       <div className="map-tab">
-        <div className="map-loading">Loading…</div>
+        <div className="map-loading">Cargando…</div>
       </div>
     );
   }
@@ -200,12 +200,12 @@ function MapTabInner() {
     <div className="map-tab">
       <aside className="map-sidebar">
         <div className="sidebar-header">
-          <h3>Locations</h3>
+          <h3>Ubicaciones</h3>
           <button
             className="icon-btn"
             onClick={() => setShowSettings((s) => !s)}
-            title="Map settings"
-            aria-label="Map settings"
+            title="Ajustes del mapa"
+            aria-label="Ajustes del mapa"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="3" />
@@ -226,8 +226,8 @@ function MapTabInner() {
             aria-pressed={mapDisplay.showPinConnections}
             title={
               mapDisplay.showPinConnections
-                ? 'Hide pin connections'
-                : 'Show pin connections'
+                ? 'Ocultar conexiones de puntos'
+                : 'Mostrar conexiones de puntos'
             }
           >
             <svg
@@ -243,7 +243,7 @@ function MapTabInner() {
             >
               <line x1="3" y1="20" x2="21" y2="4" />
             </svg>
-            Connect pins
+            Conectar puntos
           </button>
           {mapDisplay.showPinConnections && (
             <div className="map-connect-colors">
@@ -260,7 +260,7 @@ function MapTabInner() {
                     onClick={() =>
                       updateMapDisplay({ pinConnectionColor: c.bg })
                     }
-                    aria-label={`Line color: ${c.name}`}
+                    aria-label={`Color de línea: ${c.name}`}
                     title={c.name}
                   />
                 );
@@ -279,8 +279,8 @@ function MapTabInner() {
                       className={`map-connect-swatch color-swatch-custom ${isCustom ? 'selected' : ''}`}
                       style={isCustom ? { background: current } : undefined}
                       onClick={() => connectorColorInputRef.current?.click()}
-                      aria-label="Custom line color"
-                      title="Custom color"
+                      aria-label="Color de línea personalizado"
+                      title="Color personalizado"
                     />
                     <input
                       ref={connectorColorInputRef}
@@ -302,9 +302,9 @@ function MapTabInner() {
 
         {pins.length === 0 ? (
           <div className="empty-state">
-            <p>No pinned locations yet.</p>
+            <p>Aún no hay ubicaciones marcadas.</p>
             <p className="empty-hint">
-              Click anywhere on the map to drop a pin.
+              Haz clic en cualquier punto del mapa para colocar una marca.
             </p>
           </div>
         ) : (
@@ -360,12 +360,12 @@ function MapTabInner() {
                   className="pin-delete"
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (confirm(`Delete "${pinDisplayLabel(pin)}"?`)) {
+                    if (confirm(`¿Eliminar "${pinDisplayLabel(pin)}"?`)) {
                       deletePin(pin.id);
                     }
                   }}
-                  aria-label="Delete pin"
-                  title="Delete pin"
+                  aria-label="Eliminar punto"
+                  title="Eliminar punto"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
@@ -703,12 +703,12 @@ function MapsKeySetupSettings({ onClose }) {
   return (
     <div className="map-settings">
       <div className="modal-header">
-        <h2>Map settings</h2>
+        <h2>Ajustes del mapa</h2>
         <button
           type="button"
           className="icon-btn"
           onClick={onClose}
-          aria-label="Close"
+          aria-label="Cerrar"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
@@ -718,7 +718,7 @@ function MapsKeySetupSettings({ onClose }) {
           choice is the first thing the user sees. */}
       <div className="settings-current">
         <div className="settings-row">
-          <span className="settings-label">Map provider</span>
+          <span className="settings-label">Proveedor de mapa</span>
         </div>
         <div className="provider-toggle" role="tablist">
           <button
@@ -741,9 +741,9 @@ function MapsKeySetupSettings({ onClose }) {
           </button>
         </div>
         <p className="settings-hint">
-          Google Maps gives richer place details but needs an API key.
-          OpenStreetMap is free and key-free, but place auto-fill and the
-          info popup are simpler.
+          Google Maps ofrece detalles de lugares más ricos pero necesita una
+          clave de API. OpenStreetMap es gratis y sin clave, pero el
+          autocompletado de lugares y la ventana de información son más simples.
         </p>
       </div>
 
@@ -751,13 +751,13 @@ function MapsKeySetupSettings({ onClose }) {
 
       <div className="settings-current">
         <div className="settings-row">
-          <span className="settings-label">Current API key</span>
+          <span className="settings-label">Clave de API actual</span>
           <code className="settings-value">{maskKey(googleMapsApiKey)}</code>
         </div>
         <div className="settings-row">
-          <span className="settings-label">Source</span>
+          <span className="settings-label">Origen</span>
           <span className="settings-value">
-            {googleMapsApiKeySource ?? 'unknown'}
+            {googleMapsApiKeySource ?? 'desconocido'}
           </span>
         </div>
         <button
@@ -766,14 +766,14 @@ function MapsKeySetupSettings({ onClose }) {
           onClick={() => {
             if (
               confirm(
-                'Clear the saved Google Maps API key from this browser? You can re-enter it any time.',
+                '¿Borrar la clave de API de Google Maps guardada en este navegador? Puedes volver a introducirla cuando quieras.',
               )
             ) {
               clearGoogleMapsApiKey();
             }
           }}
         >
-          Clear key
+          Borrar clave
         </button>
       </div>
 
@@ -785,30 +785,31 @@ function MapsKeySetupSettings({ onClose }) {
       <form className="settings-current" onSubmit={handleSaveMapId}>
         <div className="settings-row">
           <span className="settings-label">
-            Map ID <span className="settings-optional">(optional)</span>
+            Map ID <span className="settings-optional">(opcional)</span>
           </span>
           <code className="settings-value">
             {googleMapsMapId ?? '—'}
           </code>
         </div>
         <div className="settings-row">
-          <span className="settings-label">Source</span>
+          <span className="settings-label">Origen</span>
           <span className="settings-value">
-            {googleMapsMapIdSource ?? 'not set'}
+            {googleMapsMapIdSource ?? 'sin definir'}
           </span>
         </div>
         <input
           type="text"
           autoComplete="off"
           spellCheck="false"
-          placeholder="Paste a Map ID from Google Cloud → Map Management"
+          placeholder="Pega un Map ID de Google Cloud → Gestión de mapas"
           value={mapIdDraft}
           onChange={(e) => setMapIdDraft(e.target.value)}
           className="settings-input"
         />
         <p className="settings-hint">
-          Optional. Leave blank to use Google's default styling. Required only
-          if you want a custom map style you've created in Google Cloud.
+          Opcional. Déjalo en blanco para usar el estilo predeterminado de
+          Google. Solo es necesario si quieres un estilo de mapa personalizado
+          que hayas creado en Google Cloud.
         </p>
         <div className="settings-actions">
           <button
@@ -817,14 +818,14 @@ function MapsKeySetupSettings({ onClose }) {
             onClick={clearGoogleMapsMapId}
             disabled={!googleMapsMapId}
           >
-            Clear
+            Borrar
           </button>
           <button
             type="submit"
             className="btn btn-primary"
             disabled={!mapIdChanged}
           >
-            Save Map ID
+            Guardar Map ID
           </button>
         </div>
       </form>

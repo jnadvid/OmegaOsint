@@ -64,7 +64,7 @@ export function saveRecent(snapshot, { lastSavedAt } = {}) {
   const previous = idx >= 0 ? recents[idx] : null;
   const entry = {
     id: snapshot.id,
-    name: snapshot.name ?? 'Untitled Project',
+    name: snapshot.name ?? 'Proyecto sin título',
     snapshot,
     snapshotAt: new Date().toISOString(),
     lastSavedAt:

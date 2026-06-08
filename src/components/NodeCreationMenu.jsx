@@ -114,7 +114,7 @@ export default function NodeCreationMenu({ position, onSelect, onClose }) {
         <input
           type="text"
           autoFocus
-          placeholder="Add identifier…"
+          placeholder="Añadir identificador…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleSearchKeyDown}
@@ -122,7 +122,7 @@ export default function NodeCreationMenu({ position, onSelect, onClose }) {
         />
         <div className="node-menu-list" ref={listRef}>
           {totalShown === 0 ? (
-            <div className="node-menu-empty">No matches.</div>
+            <div className="node-menu-empty">Sin coincidencias.</div>
           ) : (
             filtered.map((cat) => (
               <div key={cat.key} className="node-menu-group">

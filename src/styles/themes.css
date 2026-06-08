@@ -1,39 +1,50 @@
+/* ===========================================================================
+   Omega OSINT · Paleta cuántica
+   Inspiración: campos cuánticos, órbitas atómicas, luz de partículas.
+   Modo oscuro = espacio profundo violeta/cian. Modo claro = laboratorio limpio.
+   =========================================================================== */
 :root[data-theme='dark'] {
-  --bg-0: #0b0d12;
-  --bg-1: #12151c;
-  --bg-2: #181c25;
-  --bg-3: #20242f;
-  --bg-hover: #262b38;
-  --border: #2a2f3d;
-  --border-strong: #3a4150;
-  --text-0: #e8ecf3;
-  --text-1: #b6bdcc;
-  --text-2: #7a8294;
-  --accent: #5b8def;
-  --accent-hover: #769eff;
-  --accent-soft: rgba(91, 141, 239, 0.15);
-  --danger: #e5484d;
-  --success: #46a758;
-  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.45);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --bg-0: #070612;
+  --bg-1: #0d0b1d;
+  --bg-2: #151231;
+  --bg-3: #1d1942;
+  --bg-hover: #241f4f;
+  --border: #2a2553;
+  --border-strong: #3d3678;
+  --text-0: #ecebff;
+  --text-1: #b8b3e2;
+  --text-2: #7d77ad;
+  --accent: #7b61ff;
+  --accent-hover: #9c86ff;
+  --accent-soft: rgba(123, 97, 255, 0.16);
+  --quantum-cyan: #22d3ee;
+  --quantum-glow: 0 0 22px rgba(123, 97, 255, 0.45);
+  --quantum-gradient: linear-gradient(135deg, #7b61ff 0%, #22d3ee 100%);
+  --danger: #ff5470;
+  --success: #2dd4bf;
+  --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(123, 97, 255, 0.08);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.45);
 }
 
 :root[data-theme='light'] {
-  --bg-0: #f6f7fb;
+  --bg-0: #f5f4ff;
   --bg-1: #ffffff;
-  --bg-2: #f0f2f7;
-  --bg-3: #e6e9f0;
-  --bg-hover: #dde2ec;
-  --border: #d8dde6;
-  --border-strong: #bcc3cf;
-  --text-0: #161922;
-  --text-1: #475063;
-  --text-2: #6b7589;
-  --accent: #2a66e6;
-  --accent-hover: #1a52cf;
-  --accent-soft: rgba(42, 102, 230, 0.12);
-  --danger: #d93640;
-  --success: #2e8b40;
-  --shadow-lg: 0 10px 40px rgba(20, 30, 60, 0.12);
-  --shadow-sm: 0 2px 8px rgba(20, 30, 60, 0.08);
+  --bg-2: #efecff;
+  --bg-3: #e4e0fb;
+  --bg-hover: #ddd7f8;
+  --border: #ddd6f5;
+  --border-strong: #c2b8ec;
+  --text-0: #15122e;
+  --text-1: #494370;
+  --text-2: #6c6597;
+  --accent: #6b4eff;
+  --accent-hover: #5638e6;
+  --accent-soft: rgba(107, 78, 255, 0.12);
+  --quantum-cyan: #0891b2;
+  --quantum-glow: 0 0 20px rgba(107, 78, 255, 0.28);
+  --quantum-gradient: linear-gradient(135deg, #6b4eff 0%, #06b6d4 100%);
+  --danger: #e11d48;
+  --success: #0d9488;
+  --shadow-lg: 0 12px 44px rgba(40, 30, 90, 0.16);
+  --shadow-sm: 0 2px 8px rgba(40, 30, 90, 0.1);
 }

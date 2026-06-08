@@ -18,7 +18,7 @@ export default function MapsKeySetup({ compact = false, onSaved }) {
     e.preventDefault();
     const trimmed = value.trim();
     if (!trimmed) {
-      setError('Paste your Google Maps API key first.');
+      setError('Pega primero tu clave de API de Google Maps.');
       return;
     }
     setGoogleMapsApiKey(trimmed);
@@ -36,14 +36,15 @@ export default function MapsKeySetup({ compact = false, onSaved }) {
             <circle cx="12" cy="10" r="3" />
           </svg>
         </div>
-        <h2>Connect Google Maps</h2>
+        <h2>Conectar Google Maps</h2>
         <p className="maps-setup-sub">
-          The map needs a Google Maps JavaScript API key. Your key stays on this
-          device — it never gets sent anywhere or stored in project files.
+          El mapa necesita una clave de la API JavaScript de Google Maps. Tu
+          clave se queda en este dispositivo — nunca se envía a ningún sitio ni
+          se guarda en los archivos de proyecto.
         </p>
 
         <form onSubmit={handleSubmit} className="maps-setup-form">
-          <label htmlFor="gmaps-key">Google Maps API key</label>
+          <label htmlFor="gmaps-key">Clave de API de Google Maps</label>
           <input
             id="gmaps-key"
             type="text"
@@ -56,12 +57,12 @@ export default function MapsKeySetup({ compact = false, onSaved }) {
           {error && <div className="maps-setup-error">{error}</div>}
           <div className="maps-setup-actions">
             <button type="submit" className="btn btn-primary">
-              Save key
+              Guardar clave
             </button>
           </div>
         </form>
 
-        <div className="maps-setup-divider"><span>or</span></div>
+        <div className="maps-setup-divider"><span>o</span></div>
 
         {/* Escape hatch for users who don't want to deal with Google Cloud
             at all — one click switches the provider to OpenStreetMap. */}
@@ -74,33 +75,33 @@ export default function MapsKeySetup({ compact = false, onSaved }) {
             <circle cx="12" cy="12" r="10" />
             <path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20M12 2a15.3 15.3 0 0 0 0 20" />
           </svg>
-          Use OpenStreetMap instead (no key needed)
+          Usar OpenStreetMap en su lugar (sin clave)
         </button>
 
         <div className="maps-setup-alt">
           <p>
-            Prefer editing a file? Copy <code>public/app.config.example.json</code> to{' '}
-            <code>{APP_CONFIG_PATH_HINT}</code> and paste your key under{' '}
-            <code>googleMaps.apiKey</code>. The app reads it on next load.
+            ¿Prefieres editar un archivo? Copia <code>public/app.config.example.json</code> a{' '}
+            <code>{APP_CONFIG_PATH_HINT}</code> y pega tu clave en{' '}
+            <code>googleMaps.apiKey</code>. La app la lee al recargar.
           </p>
         </div>
 
         {googleMapsApiKeySource && (
           <div className="maps-setup-status">
-            Current key source: <strong>{googleMapsApiKeySource}</strong>
+            Origen de la clave actual: <strong>{googleMapsApiKeySource}</strong>
           </div>
         )}
 
         <details className="maps-setup-help">
-          <summary>How do I get an API key?</summary>
+          <summary>¿Cómo consigo una clave de API?</summary>
           <ol>
-            <li>Open the <strong>Google Cloud Console</strong> and create or select a project.</li>
-            <li>Enable the <strong>Maps JavaScript API</strong> (and <strong>Places API</strong> if you want auto-fill for known places).</li>
-            <li>Under <strong>APIs &amp; Services → Credentials</strong>, create an API key.</li>
-            <li>For safety, restrict the key to <code>http://localhost</code> and any other origins you use.</li>
+            <li>Abre la <strong>Consola de Google Cloud</strong> y crea o selecciona un proyecto.</li>
+            <li>Activa la <strong>Maps JavaScript API</strong> (y la <strong>Places API</strong> si quieres autocompletado de lugares conocidos).</li>
+            <li>En <strong>APIs y servicios → Credenciales</strong>, crea una clave de API.</li>
+            <li>Por seguridad, restringe la clave a <code>http://localhost</code> y a cualquier otro origen que utilices.</li>
           </ol>
           <p className="maps-setup-warning">
-            Usage is billed by Google under your account's free tier and pricing. Restrict your key.
+            Google factura el uso según la capa gratuita y los precios de tu cuenta. Restringe tu clave.
           </p>
         </details>
       </div>

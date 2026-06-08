@@ -23,6 +23,19 @@
   min-width: 0;
 }
 
+.project-brand-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--quantum-gradient);
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: var(--quantum-glow);
+}
+
 .project-title {
   min-width: 0;
 }
@@ -63,8 +76,8 @@
 }
 
 .tab-button.active {
-  background: var(--bg-1);
-  color: var(--text-0);
+  background: var(--accent-soft);
+  color: var(--accent);
   box-shadow: var(--shadow-sm);
 }
 

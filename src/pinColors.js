@@ -10,16 +10,16 @@
  * everywhere without extra wiring.
  */
 export const PIN_COLORS = {
-  red:    { name: 'Red',    bg: '#ef4444', border: '#b91c1c', glyph: '#ffffff' },
-  orange: { name: 'Orange', bg: '#f97316', border: '#c2410c', glyph: '#ffffff' },
-  yellow: { name: 'Yellow', bg: '#eab308', border: '#a16207', glyph: '#1d1d1f' },
-  green:  { name: 'Green',  bg: '#10b981', border: '#047857', glyph: '#ffffff' },
-  teal:   { name: 'Teal',   bg: '#14b8a6', border: '#0f766e', glyph: '#ffffff' },
-  blue:   { name: 'Blue',   bg: '#3b82f6', border: '#1e40af', glyph: '#ffffff' },
-  purple: { name: 'Purple', bg: '#8b5cf6', border: '#6d28d9', glyph: '#ffffff' },
-  pink:   { name: 'Pink',   bg: '#ec4899', border: '#be185d', glyph: '#ffffff' },
-  white:  { name: 'White',  bg: '#ffffff', border: '#9ca3af', glyph: '#1d1d1f' },
-  black:  { name: 'Black',  bg: '#0f1115', border: '#000000', glyph: '#ffffff' },
+  red:    { name: 'Rojo',     bg: '#ef4444', border: '#b91c1c', glyph: '#ffffff' },
+  orange: { name: 'Naranja',  bg: '#f97316', border: '#c2410c', glyph: '#ffffff' },
+  yellow: { name: 'Amarillo', bg: '#eab308', border: '#a16207', glyph: '#1d1d1f' },
+  green:  { name: 'Verde',    bg: '#10b981', border: '#047857', glyph: '#ffffff' },
+  teal:   { name: 'Turquesa', bg: '#14b8a6', border: '#0f766e', glyph: '#ffffff' },
+  blue:   { name: 'Azul',     bg: '#3b82f6', border: '#1e40af', glyph: '#ffffff' },
+  purple: { name: 'Morado',   bg: '#8b5cf6', border: '#6d28d9', glyph: '#ffffff' },
+  pink:   { name: 'Rosa',     bg: '#ec4899', border: '#be185d', glyph: '#ffffff' },
+  white:  { name: 'Blanco',   bg: '#ffffff', border: '#9ca3af', glyph: '#1d1d1f' },
+  black:  { name: 'Negro',    bg: '#0f1115', border: '#000000', glyph: '#ffffff' },
 };
 
 export const DEFAULT_PIN_COLOR = 'red';

@@ -2,6 +2,7 @@ import { useProject } from '../context/ProjectContext.jsx';
 import { NavigationProvider, useNavigation } from '../context/NavigationContext.jsx';
 import { NodeHistoryProvider } from '../context/NodeHistoryContext.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
+import AtomLogo from './AtomLogo.jsx';
 import InfoTab from './InfoTab.jsx';
 import MapTab from './MapTab.jsx';
 import './ProjectView.css';
@@ -27,17 +28,20 @@ function ProjectViewInner() {
           <button
             className="icon-btn"
             onClick={closeProject}
-            title="Back to projects"
-            aria-label="Back to projects"
+            title="Volver a proyectos"
+            aria-label="Volver a proyectos"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
           </button>
+          <span className="project-brand-logo" title="Omega OSINT">
+            <AtomLogo size={26} />
+          </span>
           <div className="project-title">
             <div className="project-name">{project.name}</div>
             {project.target?.name && (
-              <div className="project-target">Target: {project.target.name}</div>
+              <div className="project-target">Objetivo: {project.target.name}</div>
             )}
           </div>
         </div>
@@ -49,7 +53,7 @@ function ProjectViewInner() {
             className={`tab-button ${tab === 'info' ? 'active' : ''}`}
             onClick={() => setTab('info')}
           >
-            Information
+            Información
           </button>
           <button
             role="tab"
@@ -57,7 +61,7 @@ function ProjectViewInner() {
             className={`tab-button ${tab === 'map' ? 'active' : ''}`}
             onClick={() => setTab('map')}
           >
-            Map
+            Mapa
           </button>
         </nav>
 
@@ -67,7 +71,7 @@ function ProjectViewInner() {
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
               <path d="M17 21v-8H7v8M7 3v5h8" />
             </svg>
-            Save
+            Guardar
           </button>
           <ThemeToggle />
         </div>

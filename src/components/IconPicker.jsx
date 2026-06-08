@@ -43,12 +43,12 @@ export default function IconPicker({ typeKey, currentIconId, onSelect, onClose }
     e.target.value = '';
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-      setError('Please choose an image file (PNG, JPG, SVG, …).');
+      setError('Elige un archivo de imagen (PNG, JPG, SVG…).');
       return;
     }
     if (file.size > MAX_ICON_BYTES) {
       setError(
-        `Icon is too large (${Math.round(file.size / 1024)}KB). Max is ${Math.round(MAX_ICON_BYTES / 1024)}KB.`,
+        `El icono es demasiado grande (${Math.round(file.size / 1024)} KB). El máximo es ${Math.round(MAX_ICON_BYTES / 1024)} KB.`,
       );
       return;
     }
@@ -65,7 +65,7 @@ export default function IconPicker({ typeKey, currentIconId, onSelect, onClose }
       const id = addIcon(niceName, dataUrl);
       onSelect(id);
     } catch (err) {
-      setError(`Could not read file: ${err.message ?? err}`);
+      setError(`No se pudo leer el archivo: ${err.message ?? err}`);
     }
   };
 
@@ -93,24 +93,24 @@ export default function IconPicker({ typeKey, currentIconId, onSelect, onClose }
     <div className="modal-backdrop icon-picker-backdrop" onMouseDown={onClose}>
       <div className="modal icon-picker" onMouseDown={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Choose icon</h2>
+          <h2>Elegir icono</h2>
           <button
             type="button"
             className="icon-btn"
             onClick={onClose}
-            aria-label="Close"
+            aria-label="Cerrar"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
           </button>
         </div>
 
         <div className="icon-picker-section">
-          <h4>Default</h4>
+          <h4>Por defecto</h4>
           <button
             type="button"
             className={`icon-tile icon-tile-default ${!currentIconId ? 'selected' : ''}`}
             onClick={() => onSelect(null)}
-            title="Use the built-in default for this type"
+            title="Usar el predeterminado para este tipo"
           >
             <IdentifierBadge
               typeKey={typeKey}
@@ -118,13 +118,13 @@ export default function IconPicker({ typeKey, currentIconId, onSelect, onClose }
               size="lg"
             />
             <span className="icon-tile-text">
-              {getTypeDef(typeKey).label} default
+              Predeterminado · {getTypeDef(typeKey).label}
             </span>
           </button>
         </div>
 
         <div className="icon-picker-section">
-          <h4>Built-in</h4>
+          <h4>Incluidos</h4>
           <div className="icon-grid">
             {builtInEntries.map(([id, icon]) => (
               <button
@@ -146,11 +146,11 @@ export default function IconPicker({ typeKey, currentIconId, onSelect, onClose }
         </div>
 
         <div className="icon-picker-section">
-          <h4>Your icons</h4>
+          <h4>Tus iconos</h4>
           {customEntries.length === 0 && (
             <p className="icon-picker-hint">
-              Upload PNG, JPG, or SVG files to reuse them across identifiers.
-              Stored in this browser only.
+              Sube archivos PNG, JPG o SVG para reutilizarlos en varios
+              identificadores. Se guardan solo en este navegador.
             </p>
           )}
           <div className="icon-grid">
@@ -178,15 +178,15 @@ export default function IconPicker({ typeKey, currentIconId, onSelect, onClose }
                     e.stopPropagation();
                     if (
                       confirm(
-                        `Remove "${icon.name}" from your icons? Identifiers still using it will fall back to the default.`,
+                        `¿Quitar "${icon.name}" de tus iconos? Los identificadores que lo usen volverán al predeterminado.`,
                       )
                     ) {
                       removeIcon(id);
                       if (currentIconId === id) onSelect(null);
                     }
                   }}
-                  aria-label={`Remove ${icon.name}`}
-                  title="Remove from library"
+                  aria-label={`Quitar ${icon.name}`}
+                  title="Quitar de la biblioteca"
                 >
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
                 </button>
@@ -196,10 +196,10 @@ export default function IconPicker({ typeKey, currentIconId, onSelect, onClose }
               type="button"
               className="icon-tile icon-tile-upload"
               onClick={handleUploadClick}
-              title="Upload a custom icon"
+              title="Subir un icono personalizado"
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-              <span className="icon-tile-text">Upload</span>
+              <span className="icon-tile-text">Subir</span>
             </button>
           </div>
           {error && <div className="icon-picker-error">{error}</div>}

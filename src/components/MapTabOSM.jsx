@@ -24,7 +24,7 @@ const DEFAULT_CENTER = [20, 0];
 const DEFAULT_ZOOM = 2;
 
 function pinDisplayLabel(pin) {
-  return pin.label?.trim() || pin.address?.trim() || 'Unnamed pin';
+  return pin.label?.trim() || pin.address?.trim() || 'Punto sin nombre';
 }
 
 function pinSecondaryLabel(pin) {
@@ -126,12 +126,12 @@ export default function MapTabOSM({ visible = true }) {
     <div className="map-tab">
       <aside className="map-sidebar">
         <div className="sidebar-header">
-          <h3>Locations</h3>
+          <h3>Ubicaciones</h3>
           <button
             className="icon-btn"
             onClick={() => setShowSettings(true)}
-            title="Map settings"
-            aria-label="Map settings"
+            title="Ajustes del mapa"
+            aria-label="Ajustes del mapa"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="3" />
@@ -153,7 +153,7 @@ export default function MapTabOSM({ visible = true }) {
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3 3">
               <line x1="3" y1="20" x2="21" y2="4" />
             </svg>
-            Connect pins
+            Conectar puntos
           </button>
           {mapDisplay.showPinConnections && (
             <div className="map-connect-colors">
@@ -170,7 +170,7 @@ export default function MapTabOSM({ visible = true }) {
                     onClick={() =>
                       updateMapDisplay({ pinConnectionColor: c.bg })
                     }
-                    aria-label={`Line color: ${c.name}`}
+                    aria-label={`Color de línea: ${c.name}`}
                     title={c.name}
                   />
                 );
@@ -181,8 +181,8 @@ export default function MapTabOSM({ visible = true }) {
 
         {pins.length === 0 ? (
           <div className="empty-state">
-            <p>No pinned locations yet.</p>
-            <p className="empty-hint">Click anywhere on the map to drop a pin.</p>
+            <p>Aún no hay ubicaciones marcadas.</p>
+            <p className="empty-hint">Haz clic en cualquier punto del mapa para colocar una marca.</p>
           </div>
         ) : (
           <ul className="pin-list">
@@ -240,12 +240,12 @@ export default function MapTabOSM({ visible = true }) {
                     className="pin-delete"
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (confirm(`Delete "${pinDisplayLabel(pin)}"?`)) {
+                      if (confirm(`¿Eliminar "${pinDisplayLabel(pin)}"?`)) {
                         deletePin(pin.id);
                       }
                     }}
-                    aria-label="Delete pin"
-                    title="Delete pin"
+                    aria-label="Eliminar punto"
+                    title="Eliminar punto"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
@@ -333,12 +333,12 @@ export default function MapTabOSM({ visible = true }) {
             >
               <div className="map-settings">
                 <div className="modal-header">
-                  <h2>Map settings</h2>
+                  <h2>Ajustes del mapa</h2>
                   <button
                     type="button"
                     className="icon-btn"
                     onClick={() => setShowSettings(false)}
-                    aria-label="Close"
+                    aria-label="Cerrar"
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
                   </button>
@@ -346,13 +346,13 @@ export default function MapTabOSM({ visible = true }) {
 
                 <div className="settings-current">
                   <div className="settings-row">
-                    <span className="settings-label">Map provider</span>
+                    <span className="settings-label">Proveedor de mapa</span>
                     <span className="settings-value">OpenStreetMap</span>
                   </div>
                   <p className="settings-hint">
-                    Using OpenStreetMap tiles and Nominatim search — no API
-                    key required. Tile rendering and geocoding still need an
-                    internet connection.
+                    Usando teselas de OpenStreetMap y búsqueda de Nominatim —
+                    sin clave de API. El renderizado de teselas y la
+                    geocodificación necesitan conexión a internet.
                   </p>
                   <button
                     type="button"
@@ -362,7 +362,7 @@ export default function MapTabOSM({ visible = true }) {
                       setShowSettings(false);
                     }}
                   >
-                    Switch to Google Maps
+                    Cambiar a Google Maps
                   </button>
                 </div>
 
@@ -548,7 +548,7 @@ function NominatimSearch({ onSelect }) {
         type="text"
         autoComplete="off"
         spellCheck="false"
-        placeholder="Search OpenStreetMap…"
+        placeholder="Buscar en OpenStreetMap…"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => results.length && setOpen(true)}
@@ -559,7 +559,7 @@ function NominatimSearch({ onSelect }) {
           type="button"
           className="map-searchbox-clear"
           onClick={() => setQuery('')}
-          title="Clear"
+          title="Limpiar"
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 6 6 18M6 6l12 12" />
@@ -569,7 +569,7 @@ function NominatimSearch({ onSelect }) {
       {open && (results.length > 0 || loading) && (
         <ul className="osm-search-results">
           {loading && results.length === 0 && (
-            <li className="osm-search-loading">Searching…</li>
+            <li className="osm-search-loading">Buscando…</li>
           )}
           {results.map((r) => (
             <li key={r.place_id}>

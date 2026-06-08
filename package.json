@@ -1,9 +1,9 @@
 {
-  "name": "osint-mapping-tool",
+  "name": "omega-osint",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Free, open-source OSINT tool for mapping target information and visited locations.",
+  "description": "Omega OSINT — herramienta libre y de código abierto para mapear información de objetivos y ubicaciones visitadas.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
