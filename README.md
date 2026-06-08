@@ -174,12 +174,16 @@ nodo. Se priorizan fuentes **gratuitas y sin clave**.
 
 | Fuente | Para qué | Coste |
 |:---|:---|:---|
+| **GitHub** | Perfil + sitio/Twitter vinculados + **correos reales de commits públicos** | Gratis, sin clave |
+| **Keybase** | Pruebas sociales verificadas (Twitter, Reddit, webs…) + cripto | Gratis, sin clave |
 | **Gravatar** | Avatar + perfil público con cuentas sociales vinculadas | Gratis, sin clave |
+| **Hacker News / Chess.com** | Perfiles de usuario (karma, país, antigüedad, bio) | Gratis, sin clave |
 | **XposedOrNot** | Brechas de datos por correo | Gratis, sin clave |
+| **DNS-over-HTTPS + RDAP** | Validez del dominio (MX), tipo (desechable/gratuito) y registro | Gratis, sin clave |
 | **libphonenumber** | País, prefijo y tipo de línea (100% local, no envía nada) | Gratis |
 | **NHTSA vPIC** | Decodificación de VIN (marca, modelo, año, motor…) | Gratis, sin clave |
 | **Perfiles de usuario** | URL canónica + el mismo handle en 20+ plataformas | Gratis |
-| **Pivotes** | Enlaces a Google dorks, HIBP, Epieos, IntelX, etc. | Gratis |
+| **Pivotes** | Google dorks, HIBP, Epieos, IntelX, Truecaller, TruePeopleSearch… | Gratis |
 
 ### Proxy local opcional (desbloquea más)
 

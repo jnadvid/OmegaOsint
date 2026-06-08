@@ -22,6 +22,7 @@ import {
   getVin,
 } from './extract.js';
 import { PLATFORMS, CROSS_CHECK_SITES } from './platforms.js';
+import { classifyEmailDomain } from './emailData.js';
 
 // --- Helpers de findings -----------------------------------------------------
 
@@ -430,6 +431,314 @@ const usernameCheck = {
   },
 };
 
+// --- Proveedor: GitHub (usuario) — perfil + correos de commits públicos -----
+// api.github.com admite CORS y es gratis (límite por IP sin token).
+
+const githubUser = {
+  id: 'github',
+  label: 'GitHub',
+  requiresProxy: false,
+  appliesTo: (idf) => getUsername(idf) || false,
+  async run(idf) {
+    const u = getUsername(idf);
+    if (!u) return [];
+    let user;
+    try {
+      user = await fetchJSON(`https://api.github.com/users/${encodeURIComponent(u)}`);
+    } catch {
+      return []; // 404 → no existe / límite alcanzado
+    }
+    if (!user || user.message || !user.login) return [];
+    const out = [];
+    const mk = (kind, title, detail, url, conf = 'confirmed') =>
+      out.push(
+        finding({
+          providerId: 'github',
+          providerLabel: 'GitHub',
+          kind,
+          title,
+          detail,
+          url,
+          severity: SEVERITY.GOOD,
+          confidence: conf,
+        }),
+      );
+    mk('profile', `GitHub: ${user.name || user.login}`, user.bio || '', user.html_url);
+    if (user.company) mk('attribute', 'Empresa', user.company);
+    if (user.location) mk('attribute', 'Ubicación', user.location);
+    if (user.email) mk('account', `Correo público: ${user.email}`, '', `mailto:${user.email}`);
+    if (user.blog) mk('account', `Sitio web: ${user.blog}`, '', /^https?:/.test(user.blog) ? user.blog : `https://${user.blog}`);
+    if (user.twitter_username)
+      mk('account', `X / Twitter: @${user.twitter_username}`, '', `https://x.com/${user.twitter_username}`);
+    mk(
+      'attribute',
+      'Actividad',
+      `${user.public_repos ?? 0} repos · ${user.followers ?? 0} seguidores · desde ${String(user.created_at).slice(0, 4)}`,
+    );
+    // Correos reales filtrados de los commits de la actividad pública.
+    try {
+      const events = await fetchJSON(`https://api.github.com/users/${encodeURIComponent(u)}/events/public`);
+      const emails = new Set();
+      for (const ev of events ?? []) {
+        if (ev.type !== 'PushEvent') continue;
+        for (const c of ev.payload?.commits ?? []) {
+          const e = c.author?.email;
+          if (e && !/noreply|users\.noreply\.github/i.test(e)) emails.add(e.toLowerCase());
+        }
+      }
+      for (const e of emails) {
+        mk('account', `Correo en commits: ${e}`, 'Extraído de commits públicos', `mailto:${e}`);
+      }
+    } catch {
+      /* sin eventos públicos */
+    }
+    return out;
+  },
+};
+
+// --- Proveedor: Keybase (usuario) — pruebas sociales vinculadas --------------
+// API pública con CORS. Devuelve proofs (twitter, github, reddit…) y cripto.
+
+const keybase = {
+  id: 'keybase',
+  label: 'Keybase',
+  requiresProxy: false,
+  appliesTo: (idf) => getUsername(idf) || false,
+  async run(idf) {
+    const u = getUsername(idf);
+    if (!u) return [];
+    let data;
+    try {
+      data = await fetchJSON(
+        `https://keybase.io/_/api/1.0/user/lookup.json?usernames=${encodeURIComponent(u)}&fields=basics,profile,proofs_summary,cryptocurrency_addresses`,
+      );
+    } catch {
+      return [];
+    }
+    const them = data?.them?.[0];
+    if (!them) return [];
+    const out = [];
+    const full = them.profile?.full_name;
+    out.push(
+      finding({
+        providerId: 'keybase',
+        providerLabel: 'Keybase',
+        kind: 'profile',
+        title: `Keybase: ${full || u}`,
+        detail: them.profile?.location || them.profile?.bio || '',
+        url: `https://keybase.io/${u}`,
+        severity: SEVERITY.GOOD,
+        confidence: 'confirmed',
+      }),
+    );
+    for (const p of them.proofs_summary?.all ?? []) {
+      out.push(
+        finding({
+          providerId: 'keybase',
+          providerLabel: 'Keybase',
+          kind: 'account',
+          title: `${p.proof_type}: ${p.nametag}`,
+          detail: 'Prueba verificada en Keybase',
+          url: p.service_url || p.proof_url,
+          severity: SEVERITY.GOOD,
+          confidence: 'confirmed',
+        }),
+      );
+    }
+    for (const c of them.cryptocurrency_addresses?.bitcoin ?? []) {
+      out.push(
+        finding({
+          providerId: 'keybase',
+          providerLabel: 'Keybase',
+          kind: 'attribute',
+          title: `Bitcoin: ${c.address}`,
+          url: `https://www.blockchain.com/btc/address/${c.address}`,
+          severity: SEVERITY.INFO,
+          confidence: 'confirmed',
+        }),
+      );
+    }
+    return out;
+  },
+};
+
+// --- Proveedor: Hacker News (usuario) ---------------------------------------
+
+const hackernews = {
+  id: 'hackernews',
+  label: 'Hacker News',
+  requiresProxy: false,
+  appliesTo: (idf) => getUsername(idf) || false,
+  async run(idf) {
+    const u = getUsername(idf);
+    if (!u) return [];
+    let data;
+    try {
+      data = await fetchJSON(
+        `https://hacker-news.firebaseio.com/v0/user/${encodeURIComponent(u)}.json`,
+      );
+    } catch {
+      return [];
+    }
+    if (!data || !data.id) return [];
+    const out = [
+      finding({
+        providerId: 'hackernews',
+        providerLabel: 'Hacker News',
+        kind: 'profile',
+        title: `Hacker News: ${data.id}`,
+        detail: `${data.karma ?? 0} karma · desde ${new Date((data.created ?? 0) * 1000).getFullYear()}`,
+        url: `https://news.ycombinator.com/user?id=${encodeURIComponent(u)}`,
+        severity: SEVERITY.GOOD,
+        confidence: 'confirmed',
+      }),
+    ];
+    if (data.about) {
+      // El "about" suele contener enlaces o contactos.
+      const text = data.about.replace(/<[^>]+>/g, ' ').trim();
+      if (text) {
+        out.push(
+          finding({
+            providerId: 'hackernews',
+            providerLabel: 'Hacker News',
+            kind: 'attribute',
+            title: 'Bio',
+            detail: text.slice(0, 160),
+            severity: SEVERITY.INFO,
+            confidence: 'confirmed',
+          }),
+        );
+      }
+    }
+    return out;
+  },
+};
+
+// --- Proveedor: Chess.com (usuario) -----------------------------------------
+
+const chesscom = {
+  id: 'chesscom',
+  label: 'Chess.com',
+  requiresProxy: false,
+  appliesTo: (idf) => getUsername(idf) || false,
+  async run(idf) {
+    const u = getUsername(idf);
+    if (!u) return [];
+    let data;
+    try {
+      data = await fetchJSON(`https://api.chess.com/pub/player/${encodeURIComponent(u.toLowerCase())}`);
+    } catch {
+      return [];
+    }
+    if (!data || !data.username) return [];
+    const country = data.country ? data.country.split('/').pop() : '';
+    return [
+      finding({
+        providerId: 'chesscom',
+        providerLabel: 'Chess.com',
+        kind: 'profile',
+        title: `Chess.com: ${data.name || data.username}`,
+        detail: [country, data.followers != null ? `${data.followers} seguidores` : '']
+          .filter(Boolean)
+          .join(' · '),
+        url: data.url || `https://www.chess.com/member/${u}`,
+        severity: SEVERITY.GOOD,
+        confidence: 'confirmed',
+      }),
+    ];
+  },
+};
+
+// --- Proveedor: Dominio de correo (clasificación + MX + RDAP) ----------------
+// DNS-over-HTTPS de Google y RDAP admiten CORS y son gratis.
+
+const emailDomain = {
+  id: 'email-domain',
+  label: 'Dominio de correo',
+  requiresProxy: false,
+  appliesTo: (idf) => getEmails(idf)[0] ?? false,
+  async run(idf) {
+    const email = getEmails(idf)[0];
+    if (!email) return [];
+    const domain = email.split('@')[1];
+    if (!domain) return [];
+    const out = [];
+    const cls = classifyEmailDomain(domain);
+    out.push(
+      finding({
+        providerId: 'email-domain',
+        providerLabel: 'Dominio',
+        kind: 'attribute',
+        title: `Tipo de dominio: ${cls.label}`,
+        detail: domain,
+        severity: cls.type === 'disposable' ? SEVERITY.WARN : SEVERITY.INFO,
+        confidence: 'confirmed',
+      }),
+    );
+    // Registros MX → ¿puede recibir correo?
+    try {
+      const dns = await fetchJSON(
+        `https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`,
+      );
+      const mx = (dns?.Answer ?? []).filter((a) => a.type === 15);
+      if (mx.length) {
+        const host = mx[0].data.split(' ').pop().replace(/\.$/, '');
+        out.push(
+          finding({
+            providerId: 'email-domain',
+            providerLabel: 'Dominio',
+            kind: 'attribute',
+            title: 'El dominio puede recibir correo (MX)',
+            detail: host,
+            severity: SEVERITY.GOOD,
+            confidence: 'confirmed',
+          }),
+        );
+      }
+    } catch {
+      /* sin DoH */
+    }
+    // RDAP: datos de registro del dominio.
+    try {
+      const rdap = await fetchJSON(`https://rdap.org/domain/${encodeURIComponent(domain)}`);
+      const reg = (rdap?.events ?? []).find((e) => e.eventAction === 'registration');
+      const registrar = (rdap?.entities ?? []).find((e) =>
+        (e.roles ?? []).includes('registrar'),
+      );
+      if (reg?.eventDate) {
+        out.push(
+          finding({
+            providerId: 'email-domain',
+            providerLabel: 'Dominio',
+            kind: 'attribute',
+            title: 'Dominio registrado',
+            detail: String(reg.eventDate).slice(0, 10),
+            severity: SEVERITY.INFO,
+            confidence: 'confirmed',
+          }),
+        );
+      }
+      const regName = registrar?.vcardArray?.[1]?.find?.((v) => v[0] === 'fn')?.[3];
+      if (regName) {
+        out.push(
+          finding({
+            providerId: 'email-domain',
+            providerLabel: 'Dominio',
+            kind: 'attribute',
+            title: 'Registrador',
+            detail: regName,
+            severity: SEVERITY.INFO,
+            confidence: 'confirmed',
+          }),
+        );
+      }
+    } catch {
+      /* TLD sin RDAP */
+    }
+    return out;
+  },
+};
+
 // --- Proveedor: Pivotes de búsqueda (navegador, sin red) --------------------
 
 const searchPivots = {
@@ -452,36 +761,71 @@ const searchPivots = {
         }),
       );
     const q = (s) => encodeURIComponent(s);
+    const f = idf.fields ?? {};
 
     for (const email of getEmails(idf)) {
       push(`Google: "${email}"`, `https://www.google.com/search?q=${q(`"${email}"`)}`);
       push(`HaveIBeenPwned: ${email}`, `https://haveibeenpwned.com/account/${q(email)}`);
       push(`Epieos: ${email}`, `https://epieos.com/?q=${q(email)}`);
       push(`IntelligenceX: ${email}`, `https://intelx.io/?s=${q(email)}`);
+      push(`Hunter.io: ${email}`, `https://hunter.io/email-verifier/${q(email)}`);
+      push(`Dehashed: ${email}`, `https://www.dehashed.com/search?query=${q(email)}`);
+      push(`Skymem: ${email}`, `https://www.skymem.info/srch?q=${q(email)}`);
     }
     const username = getUsername(idf);
     if (username) {
       push(`Google: "${username}"`, `https://www.google.com/search?q=${q(`"${username}"`)}`);
       push(`WhatsMyName (web): ${username}`, `https://whatsmyname.app/`);
       push(`Social Searcher: ${username}`, `https://www.social-searcher.com/search-users/?q5=${q(username)}`);
+      push(`Namechk: ${username}`, `https://namechk.com/`);
+      push(`KnowEm: ${username}`, `https://knowem.com/checkusernames.php?u=${q(username)}`);
     }
     for (const phone of getPhones(idf)) {
       const digits = phone.replace(/[^\d+]/g, '');
       push(`Google: ${phone}`, `https://www.google.com/search?q=${q(`"${phone}"`)}`);
+      push(`Truecaller: ${digits}`, `https://www.truecaller.com/search/global/${q(digits)}`);
       push(`Sync.me: ${digits}`, `https://sync.me/search/?number=${q(digits)}`);
+      push(`NumLookup: ${digits}`, `https://www.numlookup.com/?phone=${q(digits)}`);
+      push(`SpyDialer: ${digits}`, `https://www.spydialer.com/default.aspx`);
     }
     const name = getPersonName(idf);
     if (name) {
       push(`Google: "${name}"`, `https://www.google.com/search?q=${q(`"${name}"`)}`);
       push(`LinkedIn: ${name}`, `https://www.linkedin.com/search/results/all/?keywords=${q(name)}`);
+      push(`TruePeopleSearch: ${name}`, `https://www.truepeoplesearch.com/results?name=${q(name)}`);
+      push(`FastPeopleSearch: ${name}`, `https://www.fastpeoplesearch.com/name/${q(name.replace(/\s+/g, '-'))}`);
+    }
+    // Matrícula
+    if (idf.type === 'licensePlate' && f.plate) {
+      push(`Google: matrícula ${f.plate}`, `https://www.google.com/search?q=${q(`"${f.plate}"`)}`);
+      push(`FaxVIN (placa): ${f.plate}`, `https://www.faxvin.com/license-plate-lookup`);
+    }
+    // VIN → historial / llamadas a revisión
+    const vin = String(f.vin ?? '').trim();
+    if (vin) {
+      push(`NHTSA recalls: ${vin}`, `https://www.nhtsa.gov/recalls?vin=${q(vin)}`);
+      push(`VINCheck (NICB): ${vin}`, `https://www.nicb.org/vincheck`);
+    }
+    // Dirección
+    if (idf.type === 'address') {
+      const addr = [f.line1, f.city, f.region, f.country].filter(Boolean).join(', ');
+      if (addr) {
+        push(`Google Maps: ${addr}`, `https://www.google.com/maps/search/${q(addr)}`);
+        push(`Google: "${addr}"`, `https://www.google.com/search?q=${q(`"${addr}"`)}`);
+      }
     }
     return out;
   },
 };
 
 export const PROVIDERS = [
+  githubUser,
+  keybase,
   gravatar,
+  hackernews,
+  chesscom,
   breaches,
+  emailDomain,
   phoneParse,
   vinDecode,
   usernameCheck,
