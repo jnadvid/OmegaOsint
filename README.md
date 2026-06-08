@@ -182,6 +182,9 @@ nodo. Se priorizan fuentes **gratuitas y sin clave**.
 | **DNS-over-HTTPS + RDAP** | Validez del dominio (MX), tipo (desechable/gratuito) y registro | Gratis, sin clave |
 | **libphonenumber** | País, prefijo y tipo de línea (100% local, no envía nada) | Gratis |
 | **NHTSA vPIC** | Decodificación de VIN (marca, modelo, año, motor…) | Gratis, sin clave |
+| **ipinfo.io** | Geolocalización de IP (ciudad, organización/ASN, host) | Gratis, sin clave |
+| **Bitcoin / Ethereum** | Saldo y nº de transacciones de una dirección detectada | Gratis, sin clave |
+| **Wayback Machine** | Instantánea archivada del perfil o sitio web | Gratis, sin clave |
 | **Perfiles de usuario** | URL canónica + el mismo handle en 20+ plataformas | Gratis |
 | **Pivotes** | Google dorks, HIBP, Epieos, IntelX, Truecaller, TruePeopleSearch… | Gratis |
 
@@ -194,10 +197,21 @@ navegador por CORS. Para ellas hay un pequeño proxy **sin dependencias**:
 ```bash
 cd server
 npm start            # arranca en http://localhost:8787
-# con clave de HIBP (opcional):
-cp .env.example .env  # rellena HIBP_API_KEY
+# con claves opcionales (HIBP y/o token de GitHub):
+cp .env.example .env  # rellena HIBP_API_KEY y/o GITHUB_TOKEN
 npm run start:env
 ```
+
+Claves opcionales del proxy (todas gratuitas o con plan gratuito):
+
+| Variable | Para qué |
+|:---|:---|
+| `GITHUB_TOKEN` | Sube la API de GitHub de **60 a 5.000 peticiones/hora**. Crea un token *classic* sin permisos en <https://github.com/settings/tokens> (solo se leen datos públicos). |
+| `HIBP_API_KEY` | Usa HaveIBeenPwned para las brechas; si no está, se usa XposedOrNot (gratis). |
+
+Con el proxy activo también se habilitan la verificación real de usuarios y la
+geolocalización de IP por `ip-api` (que el navegador no puede hacer por
+restricciones de contenido mixto).
 
 La app detecta el proxy automáticamente; la barra de enriquecimiento muestra
 **«Proxy activo»** en verde. Si no está, todo sigue funcionando con las fuentes
@@ -219,6 +233,7 @@ src/
     providers.js              proveedores (Gravatar, brechas, teléfono, VIN, usuarios, pivotes)
     platforms.js              catálogo de plataformas + sitios de comprobación
     extract.js                extractores de datos del identificador
+    emailData.js              clasificación de dominios de correo (local)
     proxy.js                  detección y acceso al proxy local
   images/
     icons/                    iconos de marca por tipo de lugar (claro + oscuro)

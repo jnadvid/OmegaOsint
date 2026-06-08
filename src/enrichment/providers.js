@@ -14,10 +14,13 @@
 import { fetchJSON, proxyJSON } from './proxy.js';
 import {
   cleanHandle,
+  getCryptoAddresses,
   getEmails,
+  getIPs,
   getPersonName,
   getPhones,
   getPlatform,
+  getUrls,
   getUsername,
   getVin,
 } from './extract.js';
@@ -434,51 +437,80 @@ const usernameCheck = {
 // --- Proveedor: GitHub (usuario) — perfil + correos de commits públicos -----
 // api.github.com admite CORS y es gratis (límite por IP sin token).
 
+/** Convierte { user, emails } (de la API de GitHub) en findings. */
+function githubFindings(user, emails = []) {
+  if (!user || !user.login) return [];
+  const out = [];
+  const mk = (kind, title, detail, url, conf = 'confirmed') =>
+    out.push(
+      finding({
+        providerId: 'github',
+        providerLabel: 'GitHub',
+        kind,
+        title,
+        detail,
+        url,
+        severity: SEVERITY.GOOD,
+        confidence: conf,
+      }),
+    );
+  mk('profile', `GitHub: ${user.name || user.login}`, user.bio || '', user.html_url);
+  if (user.company) mk('attribute', 'Empresa', user.company);
+  if (user.location) mk('attribute', 'Ubicación', user.location);
+  if (user.email) mk('account', `Correo público: ${user.email}`, '', `mailto:${user.email}`);
+  if (user.blog)
+    mk('account', `Sitio web: ${user.blog}`, '', /^https?:/.test(user.blog) ? user.blog : `https://${user.blog}`);
+  if (user.twitter_username)
+    mk('account', `X / Twitter: @${user.twitter_username}`, '', `https://x.com/${user.twitter_username}`);
+  mk(
+    'attribute',
+    'Actividad',
+    `${user.public_repos ?? 0} repos · ${user.followers ?? 0} seguidores · desde ${String(user.created_at).slice(0, 4)}`,
+  );
+  for (const e of emails) {
+    mk('account', `Correo en commits: ${e}`, 'Extraído de commits públicos', `mailto:${e}`);
+  }
+  return out;
+}
+
 const githubUser = {
   id: 'github',
   label: 'GitHub',
   requiresProxy: false,
   appliesTo: (idf) => getUsername(idf) || false,
-  async run(idf) {
+  async run(idf, ctx) {
     const u = getUsername(idf);
     if (!u) return [];
+
+    // Preferir el proxy si está disponible: usa el token de GitHub (si se
+    // configuró) y sube el límite de 60/h a 5.000/h, además de evitar el
+    // límite de la IP del navegador.
+    if (ctx.proxy.available) {
+      try {
+        const data = await proxyJSON(
+          ctx.proxy.url,
+          `/enrich/github?username=${encodeURIComponent(u)}`,
+        );
+        if (data?.notFound) return [];
+        if (data?.user) return githubFindings(data.user, data.emails ?? []);
+      } catch {
+        /* cae al modo directo */
+      }
+    }
+
+    // Modo directo en el navegador (límite 60/h por IP).
     let user;
     try {
       user = await fetchJSON(`https://api.github.com/users/${encodeURIComponent(u)}`);
     } catch {
-      return []; // 404 → no existe / límite alcanzado
+      return []; // 404 / límite alcanzado
     }
     if (!user || user.message || !user.login) return [];
-    const out = [];
-    const mk = (kind, title, detail, url, conf = 'confirmed') =>
-      out.push(
-        finding({
-          providerId: 'github',
-          providerLabel: 'GitHub',
-          kind,
-          title,
-          detail,
-          url,
-          severity: SEVERITY.GOOD,
-          confidence: conf,
-        }),
-      );
-    mk('profile', `GitHub: ${user.name || user.login}`, user.bio || '', user.html_url);
-    if (user.company) mk('attribute', 'Empresa', user.company);
-    if (user.location) mk('attribute', 'Ubicación', user.location);
-    if (user.email) mk('account', `Correo público: ${user.email}`, '', `mailto:${user.email}`);
-    if (user.blog) mk('account', `Sitio web: ${user.blog}`, '', /^https?:/.test(user.blog) ? user.blog : `https://${user.blog}`);
-    if (user.twitter_username)
-      mk('account', `X / Twitter: @${user.twitter_username}`, '', `https://x.com/${user.twitter_username}`);
-    mk(
-      'attribute',
-      'Actividad',
-      `${user.public_repos ?? 0} repos · ${user.followers ?? 0} seguidores · desde ${String(user.created_at).slice(0, 4)}`,
-    );
-    // Correos reales filtrados de los commits de la actividad pública.
+    const emails = new Set();
     try {
-      const events = await fetchJSON(`https://api.github.com/users/${encodeURIComponent(u)}/events/public`);
-      const emails = new Set();
+      const events = await fetchJSON(
+        `https://api.github.com/users/${encodeURIComponent(u)}/events/public`,
+      );
       for (const ev of events ?? []) {
         if (ev.type !== 'PushEvent') continue;
         for (const c of ev.payload?.commits ?? []) {
@@ -486,13 +518,10 @@ const githubUser = {
           if (e && !/noreply|users\.noreply\.github/i.test(e)) emails.add(e.toLowerCase());
         }
       }
-      for (const e of emails) {
-        mk('account', `Correo en commits: ${e}`, 'Extraído de commits públicos', `mailto:${e}`);
-      }
     } catch {
       /* sin eventos públicos */
     }
-    return out;
+    return githubFindings(user, [...emails]);
   },
 };
 
@@ -739,6 +768,187 @@ const emailDomain = {
   },
 };
 
+// --- Proveedor: Geolocalización de IP (ipinfo.io, gratis y con CORS) ---------
+
+const ipInfo = {
+  id: 'ip',
+  label: 'Geolocalización de IP',
+  requiresProxy: false,
+  appliesTo: (idf) => getIPs(idf)[0] ?? false,
+  async run(idf, ctx) {
+    const ips = getIPs(idf).slice(0, 3);
+    const out = [];
+    for (const ip of ips) {
+      let info = null;
+      try {
+        info = await fetchJSON(`https://ipinfo.io/${ip}/json`);
+      } catch {
+        try {
+          const fb = await fetchJSON(`https://freeipapi.com/api/json/${ip}`);
+          info = {
+            city: fb.cityName,
+            region: fb.regionName,
+            country: fb.countryCode,
+            org: '',
+            hostname: '',
+          };
+        } catch {
+          /* respaldo vía proxy */
+          if (ctx.proxy.available) {
+            try {
+              info = await proxyJSON(ctx.proxy.url, `/enrich/ip?ip=${encodeURIComponent(ip)}`);
+            } catch {
+              info = null;
+            }
+          }
+        }
+      }
+      if (!info) continue;
+      const loc = [info.city, info.region, info.country].filter(Boolean).join(', ');
+      out.push(
+        finding({
+          providerId: 'ip',
+          providerLabel: 'IP',
+          kind: 'attribute',
+          title: `IP ${ip}`,
+          detail: loc || info.country || '',
+          severity: SEVERITY.GOOD,
+          confidence: 'confirmed',
+        }),
+      );
+      if (info.org)
+        out.push(
+          finding({
+            providerId: 'ip',
+            providerLabel: 'IP',
+            kind: 'attribute',
+            title: 'Organización / ASN',
+            detail: info.org,
+            severity: SEVERITY.INFO,
+            confidence: 'confirmed',
+          }),
+        );
+      if (info.hostname)
+        out.push(
+          finding({
+            providerId: 'ip',
+            providerLabel: 'IP',
+            kind: 'attribute',
+            title: 'Host',
+            detail: info.hostname,
+            severity: SEVERITY.INFO,
+            confidence: 'confirmed',
+          }),
+        );
+    }
+    return out;
+  },
+};
+
+// --- Proveedor: Criptodirecciones (BTC y ETH, APIs públicas con CORS) --------
+
+const cryptoAddress = {
+  id: 'crypto',
+  label: 'Criptodirecciones',
+  requiresProxy: false,
+  appliesTo: (idf) => getCryptoAddresses(idf)[0] ?? false,
+  async run(idf) {
+    const addrs = getCryptoAddresses(idf).slice(0, 4);
+    const out = [];
+    for (const { chain, address } of addrs) {
+      try {
+        if (chain === 'btc') {
+          const d = await fetchJSON(
+            `https://blockchain.info/rawaddr/${address}?cors=true&limit=0`,
+          );
+          out.push(
+            finding({
+              providerId: 'crypto',
+              providerLabel: 'Bitcoin',
+              kind: 'attribute',
+              title: `BTC ${address.slice(0, 10)}…`,
+              detail: `Saldo ${(d.final_balance / 1e8).toFixed(8)} BTC · ${d.n_tx} tx · recibido ${(d.total_received / 1e8).toFixed(4)}`,
+              url: `https://www.blockchain.com/btc/address/${address}`,
+              severity: SEVERITY.GOOD,
+              confidence: 'confirmed',
+            }),
+          );
+        } else if (chain === 'eth') {
+          const d = await fetchJSON(
+            `https://api.blockcypher.com/v1/eth/main/addrs/${address}/balance`,
+          );
+          out.push(
+            finding({
+              providerId: 'crypto',
+              providerLabel: 'Ethereum',
+              kind: 'attribute',
+              title: `ETH ${address.slice(0, 12)}…`,
+              detail: `Saldo ${(d.balance / 1e18).toFixed(6)} ETH · ${d.n_tx} tx`,
+              url: `https://etherscan.io/address/${address}`,
+              severity: SEVERITY.GOOD,
+              confidence: 'confirmed',
+            }),
+          );
+        }
+      } catch {
+        /* dirección inválida o API caída */
+      }
+    }
+    return out;
+  },
+};
+
+// --- Proveedor: Wayback Machine (instantáneas archivadas) -------------------
+
+const wayback = {
+  id: 'wayback',
+  label: 'Wayback Machine',
+  requiresProxy: false,
+  appliesTo: (idf) => {
+    const urls = getUrls(idf);
+    if (urls.length) return urls[0];
+    const u = getUsername(idf);
+    const platform = getPlatform(idf);
+    return (u && platform && PLATFORMS[platform]?.profile(u)) || false;
+  },
+  async run(idf) {
+    const candidates = new Set(getUrls(idf));
+    const u = getUsername(idf);
+    const platform = getPlatform(idf);
+    if (u && platform && PLATFORMS[platform]?.profile(u)) {
+      candidates.add(PLATFORMS[platform].profile(u));
+    }
+    const out = [];
+    for (const url of [...candidates].slice(0, 3)) {
+      try {
+        const d = await fetchJSON(
+          `https://archive.org/wayback/available?url=${encodeURIComponent(url)}`,
+        );
+        const snap = d?.archived_snapshots?.closest;
+        if (snap?.available) {
+          const ts = String(snap.timestamp);
+          const date = `${ts.slice(0, 4)}-${ts.slice(4, 6)}-${ts.slice(6, 8)}`;
+          out.push(
+            finding({
+              providerId: 'wayback',
+              providerLabel: 'Wayback',
+              kind: 'attribute',
+              title: `Instantánea archivada (${date})`,
+              detail: url,
+              url: snap.url,
+              severity: SEVERITY.INFO,
+              confidence: 'confirmed',
+            }),
+          );
+        }
+      } catch {
+        /* sin snapshot */
+      }
+    }
+    return out;
+  },
+};
+
 // --- Proveedor: Pivotes de búsqueda (navegador, sin red) --------------------
 
 const searchPivots = {
@@ -828,6 +1038,9 @@ export const PROVIDERS = [
   emailDomain,
   phoneParse,
   vinDecode,
+  ipInfo,
+  cryptoAddress,
+  wayback,
   usernameCheck,
   usernameProfiles,
   searchPivots,

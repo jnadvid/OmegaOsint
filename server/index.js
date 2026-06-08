@@ -18,6 +18,7 @@ import { SITES } from './sites.js';
 
 const PORT = process.env.PORT || 8787;
 const HIBP_API_KEY = process.env.HIBP_API_KEY || '';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 const UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36';
 const REQUEST_TIMEOUT_MS = 8000;
@@ -150,6 +151,59 @@ async function enrichBreaches(email) {
   return breachesViaXposed(email);
 }
 
+// --- GitHub (con token opcional → 5.000 req/h en vez de 60) ------------------
+
+async function enrichGithub(username) {
+  const u = cleanUsername(username);
+  if (!u) return { notFound: true };
+  const headers = { 'User-Agent': 'OmegaOSINT', Accept: 'application/vnd.github+json' };
+  if (GITHUB_TOKEN) headers.Authorization = `Bearer ${GITHUB_TOKEN}`;
+
+  const ur = await fetchWithTimeout(`https://api.github.com/users/${encodeURIComponent(u)}`, { headers });
+  if (ur.status === 404) return { notFound: true };
+  if (!ur.ok) throw new Error(`GitHub HTTP ${ur.status}`);
+  const user = await ur.json();
+
+  const emails = new Set();
+  try {
+    const er = await fetchWithTimeout(
+      `https://api.github.com/users/${encodeURIComponent(u)}/events/public`,
+      { headers },
+    );
+    if (er.ok) {
+      const events = await er.json();
+      for (const ev of events ?? []) {
+        if (ev.type !== 'PushEvent') continue;
+        for (const c of ev.payload?.commits ?? []) {
+          const e = c.author?.email;
+          if (e && !/noreply|users\.noreply\.github/i.test(e)) emails.add(e.toLowerCase());
+        }
+      }
+    }
+  } catch {
+    /* sin eventos */
+  }
+  return { user, emails: [...emails] };
+}
+
+// --- Geolocalización de IP (ip-api.com; el navegador no puede por mixed-content) ---
+
+async function enrichIP(ip) {
+  const r = await fetchWithTimeout(
+    `http://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,country,countryCode,regionName,city,isp,org,as,reverse,query`,
+  );
+  if (!r.ok) throw new Error(`ip-api HTTP ${r.status}`);
+  const d = await r.json();
+  if (d.status !== 'success') return {};
+  return {
+    city: d.city,
+    region: d.regionName,
+    country: d.countryCode,
+    org: [d.isp, d.as].filter(Boolean).join(' · '),
+    hostname: d.reverse || '',
+  };
+}
+
 // --- Servidor ----------------------------------------------------------------
 
 const server = http.createServer(async (req, res) => {
@@ -158,12 +212,31 @@ const server = http.createServer(async (req, res) => {
 
   try {
     if (url.pathname === '/health') {
-      return send(res, 200, { ok: true, service: 'omega-osint-proxy', hibp: !!HIBP_API_KEY });
+      return send(res, 200, {
+        ok: true,
+        service: 'omega-osint-proxy',
+        hibp: !!HIBP_API_KEY,
+        github: !!GITHUB_TOKEN,
+      });
     }
 
     if (url.pathname === '/enrich/username' && req.method === 'POST') {
       const body = await readBody(req);
       const result = await enrichUsername(body.username);
+      return send(res, 200, result);
+    }
+
+    if (url.pathname === '/enrich/github' && req.method === 'GET') {
+      const username = url.searchParams.get('username');
+      if (!username) return send(res, 400, { error: 'falta el parámetro username' });
+      const result = await enrichGithub(username);
+      return send(res, 200, result);
+    }
+
+    if (url.pathname === '/enrich/ip' && req.method === 'GET') {
+      const ip = url.searchParams.get('ip');
+      if (!ip) return send(res, 400, { error: 'falta el parámetro ip' });
+      const result = await enrichIP(ip);
       return send(res, 200, result);
     }
 
@@ -182,5 +255,6 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`⚛  Proxy de Omega OSINT escuchando en http://localhost:${PORT}`);
-  console.log(`   HIBP: ${HIBP_API_KEY ? 'configurado' : 'no configurado (se usa XposedOrNot)'}`);
+  console.log(`   HIBP:   ${HIBP_API_KEY ? 'configurado' : 'no configurado (se usa XposedOrNot)'}`);
+  console.log(`   GitHub: ${GITHUB_TOKEN ? 'token configurado (5.000 req/h)' : 'sin token (60 req/h por IP)'}`);
 });

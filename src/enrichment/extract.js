@@ -76,3 +76,40 @@ export function getVin(identifier) {
   const vin = String(f.vin ?? '').trim().toUpperCase();
   return /^[A-HJ-NPR-Z0-9]{11,17}$/.test(vin) ? vin : '';
 }
+
+const IPV4_RE = /\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b/g;
+const IPV6_RE = /\b(?:[a-f0-9]{1,4}:){2,7}[a-f0-9]{1,4}\b/gi;
+const BTC_RE = /\b(?:bc1[ac-hj-np-z02-9]{11,71}|[13][a-km-zA-HJ-NP-Z1-9]{25,34})\b/g;
+const ETH_RE = /\b0x[a-fA-F0-9]{40}\b/g;
+const URL_RE = /https?:\/\/[^\s"'<>]+/gi;
+
+function collect(identifier, re, transform = (x) => x) {
+  const out = new Set();
+  const f = identifier?.fields ?? {};
+  const haystack = [...Object.values(f), identifier?.notes]
+    .map((v) => String(v ?? ''))
+    .join('\n');
+  for (const m of haystack.matchAll(re)) {
+    const v = transform(m[0]);
+    if (v) out.add(v);
+  }
+  return [...out];
+}
+
+/** Direcciones IP (v4 y v6) presentes en los campos/notas. */
+export function getIPs(identifier) {
+  return [...collect(identifier, IPV4_RE), ...collect(identifier, IPV6_RE)];
+}
+
+/** Direcciones de criptomoneda detectadas (BTC y ETH). */
+export function getCryptoAddresses(identifier) {
+  const btc = collect(identifier, BTC_RE).map((a) => ({ chain: 'btc', address: a }));
+  const eth = collect(identifier, ETH_RE).map((a) => ({ chain: 'eth', address: a }));
+  return [...btc, ...eth];
+}
+
+/** URLs http(s) presentes en los campos del identificador. */
+export function getUrls(identifier) {
+  return collect(identifier, URL_RE, (u) => u.replace(/[.,)]+$/, ''));
+}
+
