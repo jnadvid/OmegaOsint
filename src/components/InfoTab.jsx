@@ -23,6 +23,8 @@ import IdentifierBadge from './IdentifierBadge.jsx';
 import IdentifierModal from './IdentifierModal.jsx';
 import IdentifierNode from './IdentifierNode.jsx';
 import NodeCreationMenu from './NodeCreationMenu.jsx';
+import EnrichmentToolbar from './EnrichmentToolbar.jsx';
+import EnrichmentBadge from './EnrichmentBadge.jsx';
 import './InfoTab.css';
 
 const NODE_TYPES = { identifier: IdentifierNode };
@@ -436,6 +438,7 @@ function InfoTabInner() {
             + Añadir
           </button>
         </div>
+        <EnrichmentToolbar />
         {identifiers.length === 0 ? (
           <div className="empty-state">
             <p>Aún no hay identificadores.</p>
@@ -475,6 +478,7 @@ function InfoTabInner() {
                       <div className="identifier-secondary">{secondary}</div>
                     )}
                   </div>
+                  <EnrichmentBadge identifier={id} />
                   <button
                     type="button"
                     className="identifier-delete"

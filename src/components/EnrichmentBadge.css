@@ -1,0 +1,40 @@
+.enrich-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.enrich-badge.ok {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.enrich-badge.breach {
+  color: #fff;
+  background: var(--danger);
+}
+
+.enrich-badge.running {
+  padding: 2px;
+  background: transparent;
+}
+
+.enrich-badge-spinner {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  animation: enrich-badge-spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes enrich-badge-spin {
+  to { transform: rotate(360deg); }
+}

@@ -152,23 +152,83 @@ Un interruptor "Conectar puntos" en la barra lateral dibuja una línea discontin
 
 Las marcas pueden vincularse a uno o varios identificadores, cada enlace con una nota corta ("check-in en IG", "titular registrado", "dirección anterior"). Haz clic en una etiqueta de identificador en la tarjeta de una marca para saltar a la pestaña Información con ese nodo resaltado. Pasa el ratón sobre un identificador en la barra lateral de la pestaña Información y las marcas vinculadas a él parpadean en el mapa.
 
+## Recolección OSINT automática ⚛
+
+Omega OSINT enriquece **automáticamente** cada identificador que añades,
+consultando fuentes abiertas en segundo plano y adjuntando los hallazgos al
+nodo. Se priorizan fuentes **gratuitas y sin clave**.
+
+### Cómo funciona
+
+- Al crear un identificador con datos consultables (correo, usuario, teléfono,
+  VIN o nombre), el motor lanza los proveedores aplicables y guarda los
+  resultados en el propio identificador (se exportan con el `.osint.json`).
+- En la pestaña **Información** verás una barra con el estado del proxy, el
+  interruptor **Auto** y el botón **Enriquecer todo**. Cada identificador
+  muestra una insignia con el número de hallazgos o un aviso de brechas.
+- Abre un identificador para ver el panel completo: cuentas y perfiles,
+  brechas de datos, atributos detectados y pivotes de búsqueda. Puedes
+  **re-enriquecer** en cualquier momento.
+
+### Fuentes que funcionan solo en el navegador (sin instalar nada)
+
+| Fuente | Para qué | Coste |
+|:---|:---|:---|
+| **Gravatar** | Avatar + perfil público con cuentas sociales vinculadas | Gratis, sin clave |
+| **XposedOrNot** | Brechas de datos por correo | Gratis, sin clave |
+| **libphonenumber** | País, prefijo y tipo de línea (100% local, no envía nada) | Gratis |
+| **NHTSA vPIC** | Decodificación de VIN (marca, modelo, año, motor…) | Gratis, sin clave |
+| **Perfiles de usuario** | URL canónica + el mismo handle en 20+ plataformas | Gratis |
+| **Pivotes** | Enlaces a Google dorks, HIBP, Epieos, IntelX, etc. | Gratis |
+
+### Proxy local opcional (desbloquea más)
+
+Algunas comprobaciones (verificación **real** de qué perfiles existen, estilo
+WhatsMyName, y APIs con clave como HaveIBeenPwned) no pueden hacerse desde el
+navegador por CORS. Para ellas hay un pequeño proxy **sin dependencias**:
+
+```bash
+cd server
+npm start            # arranca en http://localhost:8787
+# con clave de HIBP (opcional):
+cp .env.example .env  # rellena HIBP_API_KEY
+npm run start:env
+```
+
+La app detecta el proxy automáticamente; la barra de enriquecimiento muestra
+**«Proxy activo»** en verde. Si no está, todo sigue funcionando con las fuentes
+del navegador. El proxy corre en tu máquina, no persiste nada y las claves
+viven solo en variables de entorno.
+
+> **Uso responsable.** Esta automatización consulta servicios de terceros con
+> los identificadores del objetivo. Úsala solo en investigaciones autorizadas y
+> respeta los términos de servicio y los límites de tasa de cada fuente.
+
 ## Estructura del proyecto
 
 ```
 src/
   components/                 Componentes de UI (pestañas, modales, selectores)
-  context/                    ProjectContext, NodeHistoryContext, NavigationContext, …
+  context/                    ProjectContext, EnrichmentContext, NavigationContext, …
+  enrichment/                 Motor de recolección OSINT
+    engine.js                 orquestador (concurrencia, dedupe, orden)
+    providers.js              proveedores (Gravatar, brechas, teléfono, VIN, usuarios, pivotes)
+    platforms.js              catálogo de plataformas + sitios de comprobación
+    extract.js                extractores de datos del identificador
+    proxy.js                  detección y acceso al proxy local
   images/
     icons/                    iconos de marca por tipo de lugar (claro + oscuro)
     node_icons/               iconos de marca para identificadores
   styles/                     CSS global + de temas
   utils/                      projectIO, customIcons, appConfig, recentProjects
   identifierTypes.js          registro de tipos de identificador + resolvers
-  identifierIcons.js          registro de iconos de marca de identificadores
   mapIcons.js                 registro de iconos por tipo de lugar + mapeo de tipos de Google
   pinColors.js                paleta de colores de marcas
   App.jsx                     puerta entre inicio ↔ vista de proyecto
   main.jsx                    pila de proveedores + render raíz
+server/                       Proxy local opcional (Node, sin dependencias)
+  index.js                    servidor HTTP (verificación de usuarios, brechas)
+  sites.js                    lista de sitios para verificación de nombres
 public/
   app.config.example.json     plantilla para tu clave de API (versionada)
   app.config.json             tu clave real (en gitignore)

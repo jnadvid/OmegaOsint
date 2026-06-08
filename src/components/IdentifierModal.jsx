@@ -9,6 +9,7 @@ import { getPinColor } from '../pinColors.js';
 import IdentifierBadge from './IdentifierBadge.jsx';
 import IconPicker from './IconPicker.jsx';
 import LinkPicker from './LinkPicker.jsx';
+import EnrichmentPanel from './EnrichmentPanel.jsx';
 import './IdentifierModal.css';
 
 function buildEmptyFields(typeKey) {
@@ -221,6 +222,12 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
   }, [pins]);
 
   const def = typeKey ? getTypeDef(typeKey) : null;
+
+  // Identificador "en vivo" desde el estado del proyecto, para que el panel de
+  // enriquecimiento refleje los hallazgos que llegan en segundo plano.
+  const liveIdentifier = editing
+    ? (project?.identifiers ?? []).find((i) => i.id === initial.id) ?? initial
+    : null;
 
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
@@ -442,6 +449,10 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                     </button>
                   </div>
                 </div>
+              )}
+
+              {editing && liveIdentifier && (
+                <EnrichmentPanel identifier={liveIdentifier} />
               )}
             </div>
 
