@@ -1,0 +1,14 @@
+{
+  "name": "omega-osint-proxy",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Proxy local opcional de Omega OSINT (sin dependencias). Desbloquea verificación de usuarios y APIs con clave.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "start:env": "node --env-file=.env index.js"
+  }
+}

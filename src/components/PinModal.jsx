@@ -138,7 +138,7 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
           ),
           label: getIdentifierDisplayLabel(i),
           secondary: def.label,
-          group: CATEGORIES[def.category]?.label ?? 'Other',
+          group: CATEGORIES[def.category]?.label ?? 'Otros',
         };
       }),
     [identifiers],
@@ -152,12 +152,12 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
         onSubmit={handleSubmit}
       >
         <div className="modal-header">
-          <h2>{pin?.id ? 'Edit pin' : 'New pin'}</h2>
+          <h2>{pin?.id ? 'Editar punto' : 'Nuevo punto'}</h2>
           <button
             type="button"
             className="icon-btn"
             onClick={onClose}
-            aria-label="Close"
+            aria-label="Cerrar"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
           </button>
@@ -208,8 +208,8 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
                         : undefined
                     }
                     onClick={() => pinColorInputRef.current?.click()}
-                    aria-label="Custom color"
-                    title="Custom color"
+                    aria-label="Color personalizado"
+                    title="Color personalizado"
                   >
                     {isCustom && (
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={resolved.glyph} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
@@ -233,13 +233,13 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
         </div>
 
         <div className="field">
-          <label>Icon</label>
+          <label>Icono</label>
           <div className="pin-icon-picker">
             <button
               type="button"
               className={`pin-icon-tile pin-icon-default ${!draft.iconId ? 'selected' : ''}`}
               onClick={() => change('iconId', null)}
-              title="Default colored pin"
+              title="Punto de color por defecto"
             >
               <span
                 className="pin-icon-default-dot"
@@ -272,61 +272,61 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
         </div>
 
         <div className="field">
-          <label htmlFor="pin-label">Label</label>
+          <label htmlFor="pin-label">Etiqueta</label>
           <input
             id="pin-label"
             autoFocus
             value={draft.label}
             onChange={(e) => change('label', e.target.value)}
-            placeholder="e.g. Coffee shop, Workplace"
+            placeholder="p. ej. Cafetería, Trabajo"
           />
         </div>
 
         <div className="field">
-          <label htmlFor="pin-address">Address</label>
+          <label htmlFor="pin-address">Dirección</label>
           <input
             id="pin-address"
             value={draft.address}
             onChange={(e) => change('address', e.target.value)}
-            placeholder="123 Main St…"
+            placeholder="Calle Mayor 123…"
           />
         </div>
 
         <div className="field-row">
           <div className="field">
-            <label htmlFor="pin-visited">Visited</label>
+            <label htmlFor="pin-visited">Visitado</label>
             <input
               id="pin-visited"
               type="text"
               value={draft.visitedAt}
               onChange={(e) => change('visitedAt', e.target.value)}
-              placeholder="e.g. 2025-03-14 or every Tuesday"
+              placeholder="p. ej. 14-03-2025 o cada martes"
             />
           </div>
           <div className="field">
-            <label htmlFor="pin-with">With whom</label>
+            <label htmlFor="pin-with">Con quién</label>
             <input
               id="pin-with"
               value={draft.withWho}
               onChange={(e) => change('withWho', e.target.value)}
-              placeholder="People they were with"
+              placeholder="Personas con las que estaba"
             />
           </div>
         </div>
 
         <div className="field">
-          <label htmlFor="pin-notes">Notes</label>
+          <label htmlFor="pin-notes">Notas</label>
           <textarea
             id="pin-notes"
             rows={4}
             value={draft.notes}
             onChange={(e) => change('notes', e.target.value)}
-            placeholder="Anything else worth recording…"
+            placeholder="Cualquier otra cosa que merezca registrarse…"
           />
         </div>
 
         <div className="field">
-          <label>Linked identifiers</label>
+          <label>Identificadores vinculados</label>
           <div className="link-chips">
             {stagedIdentifiers.map((i) => {
               const context = staged.get(i.id) ?? '';
@@ -344,8 +344,8 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
                     }
                     title={
                       context
-                        ? `Context: ${context}`
-                        : 'Click to add context'
+                        ? `Contexto: ${context}`
+                        : 'Clic para añadir contexto'
                     }
                   >
                     <IdentifierBadge
@@ -366,8 +366,8 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
                     type="button"
                     className="link-chip-remove"
                     onClick={() => toggleStaged(i.id)}
-                    aria-label="Remove link"
-                    title="Remove link"
+                    aria-label="Quitar vínculo"
+                    title="Quitar vínculo"
                   >
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
                   </button>
@@ -376,7 +376,7 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
                       type="text"
                       autoFocus
                       className="link-chip-context-input"
-                      placeholder="Context, e.g. tagged in IG post"
+                      placeholder="Contexto, p. ej. etiquetado en una publicación de IG"
                       value={context}
                       onChange={(e) => setStagedContext(i.id, e.target.value)}
                       onKeyDown={(e) => {
@@ -399,7 +399,7 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
               onClick={() => setPickerOpen(true)}
             >
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-              Link identifier
+              Vincular identificador
             </button>
           </div>
         </div>
@@ -410,32 +410,32 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
               type="button"
               className="btn btn-ghost danger"
               onClick={() => {
-                if (confirm(`Delete this pin? This cannot be undone.`)) {
+                if (confirm(`¿Eliminar este punto? No se puede deshacer.`)) {
                   onDelete(pin.id);
                 }
               }}
             >
-              Delete pin
+              Eliminar punto
             </button>
           )}
           <div className="modal-actions-right">
             <button type="button" className="btn btn-ghost" onClick={onClose}>
-              Cancel
+              Cancelar
             </button>
             <button type="submit" className="btn btn-primary">
-              {pin?.id ? 'Save changes' : 'Save pin'}
+              {pin?.id ? 'Guardar cambios' : 'Guardar punto'}
             </button>
           </div>
         </div>
       </form>
       {pickerOpen && (
         <LinkPicker
-          title="Link identifiers"
+          title="Vincular identificadores"
           items={pickerItems}
           selectedIds={stagedIdSet}
           onToggle={toggleStaged}
           onClose={() => setPickerOpen(false)}
-          emptyText="No identifiers yet. Add some on the Information tab."
+          emptyText="Aún no hay identificadores. Añade algunos en la pestaña Información."
         />
       )}
     </div>

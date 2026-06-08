@@ -1,53 +1,53 @@
 <div align="center">
 
-# OSINT Mapping Tool
+# Omega OSINT ⚛
 
-A small web app for organizing OSINT research. Jot down identifiers (social handles, phones, vehicles, whatever), pin places on a map (Google or OpenStreetMap), and wire the two together. Nothing leaves your browser.
+Una pequeña aplicación web para organizar investigaciones OSINT. Anota identificadores (perfiles sociales, teléfonos, vehículos, lo que sea), marca lugares en un mapa (Google u OpenStreetMap) y conéctalos entre sí. Nada sale de tu navegador.
 
 [![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=black)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-6-646cff?logo=vite&logoColor=white)](https://vitejs.dev)
-[![License: GPL-3.0](https://img.shields.io/badge/license-%20%20GNU%20GPLv3%20-green)](LICENSE)
-[![Local-first](https://img.shields.io/badge/Local--first-✓-success)](#privacy)
+[![Licencia: GPL-3.0](https://img.shields.io/badge/licencia-%20%20GNU%20GPLv3%20-green)](LICENSE)
+[![Local-first](https://img.shields.io/badge/Local--first-✓-success)](#privacidad)
 
 </div>
 
 ---
 
-## Introduction
-### How does the OSINT Mapping tool work?
+## Introducción
+### ¿Cómo funciona Omega OSINT?
 
-The **Information tab** is a node graph. Each node is one piece of information: an Instagram account, a phone number, a license plate, a family member. Drag a handle to another node to wire them up. Drop the wire on empty space to spawn a new node already connected (Blender style); right-click does the same thing without dragging. Each type has its own form fields and a brand icon, and you can upload your own icons too.
+La **pestaña Información** es un grafo de nodos. Cada nodo es una pieza de información: una cuenta de Instagram, un número de teléfono, una matrícula, un familiar. Arrastra un conector hacia otro nodo para unirlos. Suelta el conector en un espacio vacío para crear un nodo nuevo ya conectado (estilo Blender); el clic derecho hace lo mismo sin arrastrar. Cada tipo tiene sus propios campos de formulario y un icono de marca, y también puedes subir tus propios iconos.
 
-The **Map tab** is click-to-pin. Drop a pin anywhere, and if the spot is a place the geocoder recognizes (a coffee shop, a school, a park), the name, address, and a fitting icon get filled in for you. There's a search bar for jumping to a place by name. Pins can be linked back to identifiers, so a coffee shop pin can carry "tagged here by @johndoe on March 14" with the relevant Instagram account attached. Pick **Google Maps** (richer POI data, needs an API key) or **OpenStreetMap** (no key, no signup) from the gear icon.
+La **pestaña Mapa** funciona con clic para marcar. Coloca una marca en cualquier sitio y, si el lugar es reconocido por el geocodificador (una cafetería, una escuela, un parque), el nombre, la dirección y un icono adecuado se rellenan por ti. Hay una barra de búsqueda para saltar a un lugar por su nombre. Las marcas pueden vincularse a identificadores, así una marca de cafetería puede llevar "etiquetado aquí por @juanperez el 14 de marzo" con la cuenta de Instagram correspondiente adjunta. Elige **Google Maps** (datos de lugares más ricos, requiere clave de API) u **OpenStreetMap** (sin clave, sin registro) desde el icono de ajustes.
 
-Everything saves out to a single `.osint.json` file you can stash anywhere, share, or version-control.
+Todo se guarda en un único archivo `.osint.json` que puedes almacenar donde quieras, compartir o versionar.
 
-## Screenshots
+## Capturas
 
-![Information tab](./readme_images/Example1.png)
-![Map tab](./readme_images/Example2.png)
+![Pestaña Información](./readme_images/Example1.png)
+![Pestaña Mapa](./readme_images/Example2.png)
 
 <br>
 
-<h2 align="center"> 🛠 Stack </h2>
+<h2 align="center"> 🛠 Tecnologías </h2>
 
 <div align="center">
 
-|Component |Tool |
+|Componente |Herramienta |
 |:---|:---|
-| UI | React 18, Vite |
-| Node graph | [`@xyflow/react`](https://reactflow.dev) |
-| Maps | [`@vis.gl/react-google-maps`](https://visgl.github.io/react-google-maps/), [`leaflet`](https://leafletjs.com) + [`react-leaflet`](https://react-leaflet.js.org) |
-| State | React Context (no Redux / no store libs) |
-| Storage | Local JSON files (projects) + `localStorage` (settings, custom icons) |
+| Interfaz | React 18, Vite |
+| Grafo de nodos | [`@xyflow/react`](https://reactflow.dev) |
+| Mapas | [`@vis.gl/react-google-maps`](https://visgl.github.io/react-google-maps/), [`leaflet`](https://leafletjs.com) + [`react-leaflet`](https://react-leaflet.js.org) |
+| Estado | React Context (sin Redux / sin librerías de store) |
+| Almacenamiento | Archivos JSON locales (proyectos) + `localStorage` (ajustes, iconos personalizados) |
 
 </div>
 
 <br>
 
-<h2 align="center"> 🚀 Getting started </h2>
+<h2 align="center"> 🚀 Primeros pasos </h2>
 
-You'll need Node 18+ and npm.
+Necesitas Node 18+ y npm.
 
 ```bash
 git clone https://github.com/anonymousRAID/OSINT-Mapping-Tool
@@ -56,39 +56,39 @@ npm install
 npm run dev
 ```
 
-Then open <http://localhost:5173>.
+Luego abre <http://localhost:5173>.
 
-To build a production bundle:
+Para generar un paquete de producción:
 
 ```bash
-npm run build       # writes to ./dist
-npm run preview     # serves ./dist on port 4173
+npm run build       # escribe en ./dist
+npm run preview     # sirve ./dist en el puerto 4173
 ```
 
 <br>
 
-## Setting up Google Maps (optional)
+## Configurar Google Maps (opcional)
 
-You only need this if you want Google Maps mode. If you'd rather skip Google Cloud entirely, jump to [OpenStreetMap mode](#openstreetmap-mode). Your key lives only in your browser and never gets committed or sent anywhere else.
+Solo lo necesitas si quieres el modo Google Maps. Si prefieres saltarte Google Cloud por completo, ve a [modo OpenStreetMap](#modo-openstreetmap). Tu clave vive solo en tu navegador y nunca se sube ni se envía a ningún otro sitio.
 
-In Google Cloud Console, pick or create a project and:
+En la Consola de Google Cloud, elige o crea un proyecto y:
 
-1. Under **APIs & Services → Library**, enable **Maps JavaScript API**, **Geocoding API**, and **Places API**. Maps JS is required; the other two power address auto-fill and place-type detection.
-2. Under **APIs & Services → Credentials**, make an API key.
-3. On that key, set **Application restrictions → HTTP referrers** and add `http://localhost:5173/*` for development. This is the only thing keeping the key safe if it ever leaks.
-4. Optional: create a **Map ID** under Maps Management → Map Styles for custom styling. Without one you'll see a console warning but the app still works.
+1. En **APIs y servicios → Biblioteca**, activa **Maps JavaScript API**, **Geocoding API** y **Places API**. Maps JS es obligatoria; las otras dos habilitan el autorrelleno de direcciones y la detección de tipos de lugar.
+2. En **APIs y servicios → Credenciales**, crea una clave de API.
+3. En esa clave, configura **Restricciones de aplicación → Referentes HTTP** y añade `http://localhost:5173/*` para desarrollo. Esto es lo único que mantiene la clave a salvo si alguna vez se filtra.
+4. Opcional: crea un **Map ID** en Gestión de mapas → Estilos de mapa para estilos personalizados. Sin uno verás un aviso en la consola pero la app sigue funcionando.
 
-Two ways to feed the key to the app:
+Dos formas de proporcionar la clave a la app:
 
-**In-app:** Paste it into the Map tab's setup screen and click Save. It goes into `localStorage`. If you already proceeded without one, the gear icon at the top left opens the same settings.
+**En la app:** Pégala en la pantalla de configuración de la pestaña Mapa y pulsa Guardar. Se guarda en `localStorage`. Si ya continuaste sin una, el icono de ajustes de la parte superior izquierda abre los mismos ajustes.
 
-**Config file:** Copy the template:
+**Archivo de configuración:** Copia la plantilla:
 
 ```bash
 cp public/app.config.example.json public/app.config.json
 ```
 
-Then fill in your values:
+Luego rellena tus valores:
 
 ```json
 {
@@ -99,96 +99,175 @@ Then fill in your values:
 }
 ```
 
-`public/app.config.json` is gitignored, so even if you push commits it won't leak.
+`public/app.config.json` está en gitignore, así que aunque hagas push no se filtrará.
 
-If both are set, `localStorage` wins. Clear it from the gear icon to fall back to the file.
+Si ambos están definidos, `localStorage` tiene prioridad. Bórralo desde el icono de ajustes para volver al archivo.
 
-## OpenStreetMap mode
+## Modo OpenStreetMap
 
-Don't feel like dealing with Google Cloud? Open the Map tab's settings (gear icon) and switch the provider to **OpenStreetMap**. Tiles come from openstreetmap.org and search/reverse-geocoding runs through Nominatim. No key, no signup, and your viewport survives switching tabs. POI detection is coarser than Google's, and the per-pin info card doesn't have live place details (rating, hours, etc.) — everything else works the same.
+¿No te apetece lidiar con Google Cloud? Abre los ajustes de la pestaña Mapa (icono de ajustes) y cambia el proveedor a **OpenStreetMap**. Las teselas vienen de openstreetmap.org y la búsqueda/geocodificación inversa se hace con Nominatim. Sin clave, sin registro, y tu vista se mantiene al cambiar de pestaña. La detección de lugares es más burda que la de Google, y la tarjeta de información por marca no tiene detalles de lugar en vivo (valoración, horarios, etc.) — todo lo demás funciona igual.
 
-## Saving, opening, and the "Continue recent" list
+## Guardar, abrir y la lista de "Continuar recientes"
 
-Click **Save** in the top-right and the project downloads as `<name>.osint.json`. Click **Open Project** on the landing screen to read one back. The format is plain JSON with a schema version, so old files keep loading after upgrades.
+Pulsa **Guardar** arriba a la derecha y el proyecto se descarga como `<nombre>.osint.json`. Pulsa **Abrir proyecto** en la pantalla de inicio para volver a cargarlo. El formato es JSON plano con una versión de esquema, así que los archivos antiguos siguen cargándose tras las actualizaciones.
 
-While you're working, the app also takes a periodic snapshot to `localStorage`. If you accidentally hit the back arrow without saving (this has happened to me more than once), the project shows up under "Continue recent" on the landing screen with an "unsaved" badge. Pick it and you're back where you were. Up to 5 recent projects are kept per browser.
+Mientras trabajas, la app también toma una instantánea periódica en `localStorage`. Si pulsas sin querer la flecha de retroceso sin guardar (a mí me ha pasado más de una vez), el proyecto aparece en "Continuar recientes" en la pantalla de inicio con una insignia de "sin guardar". Selecciónalo y vuelves donde estabas. Se conservan hasta 5 proyectos recientes por navegador.
 
-`.osint.json` is gitignored too, so dropping one in the repo folder won't end up in commits.
+`.osint.json` también está en gitignore, así que dejar uno en la carpeta del repo no acabará en los commits.
 
-## Features in depth
+## Funciones en detalle
 
-### Information tab
+### Pestaña Información
 
-Twenty built-in identifier types across Social, Contact, Personal, Vehicle, and Other, each with its own typed fields (Instagram: username, followers, posts, bio; Vehicle: make, model, year, color, owner; etc.).
+Veinte tipos de identificador integrados en las categorías Redes sociales, Contacto, Personal, Vehículo y Otros, cada uno con sus propios campos tipados (Instagram: usuario, seguidores, publicaciones, biografía; Vehículo: marca, modelo, año, color, titular; etc.).
 
-Connections:
-- Drag a handle from one node to another to wire them up.
-- Drag to empty space to get a quick-add popup (this also auto-creates the wire to the new node).
-- Right-click the canvas for the same popup without the wire.
+Conexiones:
+- Arrastra un conector de un nodo a otro para unirlos.
+- Arrastra a un espacio vacío para obtener un menú de creación rápida (esto también crea automáticamente el enlace al nuevo nodo).
+- Haz clic derecho en el lienzo para el mismo menú sin el enlace.
 
-Icons:
-- Brand icons for common platforms (Instagram, Facebook, X/Twitter, YouTube, TikTok, LinkedIn, Snapchat, Discord, Telegram, Google, Spotify, WhatsApp).
-- Upload your own. They get stored per-browser, so they're available across all projects on the same install.
+Iconos:
+- Iconos de marca para plataformas comunes (Instagram, Facebook, X/Twitter, YouTube, TikTok, LinkedIn, Snapchat, Discord, Telegram, Google, Spotify, WhatsApp).
+- Sube los tuyos. Se guardan por navegador, así que están disponibles en todos los proyectos de la misma instalación.
 
-Editing shortcuts (suppressed when you're typing in a field or a modal is open):
-- `Ctrl/Cmd + Z` undo, `Ctrl/Cmd + Shift + Z` or `Ctrl/Cmd + Y` redo. Up to 20 actions, kept in memory.
-- `Ctrl/Cmd + C / V` to copy/paste selected nodes.
-- `Ctrl/Cmd + D` to duplicate.
-- `Del` or `Backspace` removes the selection (a node or an edge).
+Atajos de edición (desactivados cuando escribes en un campo o hay un modal abierto):
+- `Ctrl/Cmd + Z` deshacer, `Ctrl/Cmd + Shift + Z` o `Ctrl/Cmd + Y` rehacer. Hasta 20 acciones, guardadas en memoria.
+- `Ctrl/Cmd + C / V` para copiar/pegar los nodos seleccionados.
+- `Ctrl/Cmd + D` para duplicar.
+- `Supr` o `Retroceso` quita la selección (un nodo o una conexión).
 
-Multi-select with a marquee or `Shift+click`. Anything done to a multi-selection counts as one undo step.
+Selección múltiple con un recuadro o `Shift+clic`. Cualquier acción sobre una selección múltiple cuenta como un solo paso de deshacer.
 
-### Map tab
+### Pestaña Mapa
 
-Click anywhere to drop a pin. If the spot is a known place — a Google POI in Google mode, a Nominatim hit in OSM mode — the name, address, and a fitting icon get filled in. Otherwise you get coordinates and fill the rest in.
+Haz clic en cualquier sitio para colocar una marca. Si el lugar es conocido — un POI de Google en modo Google, un resultado de Nominatim en modo OSM — el nombre, la dirección y un icono adecuado se rellenan. Si no, obtienes las coordenadas y rellenas el resto.
 
-Ten built-in place icons (coffee, food, gym, home, movie, park, amusement park, school, shopping, clothes, library) with light and dark variants that swap with the theme. The icon and color are overridable per-pin.
+Diez iconos de lugar integrados (cafetería, comida, gimnasio, casa, cine, parque, parque de atracciones, escuela, centro comercial, ropa, biblioteca) con variantes clara y oscura que cambian con el tema. El icono y el color son personalizables por marca.
 
-Clicking a pin opens a card with your notes (visited date, who they were with, free-form notes), the identifiers linked to it, and a link out to the live map. In Google mode the card also shows whatever place details Google has on file (rating, opening hours, phone, website).
+Al hacer clic en una marca se abre una tarjeta con tus notas (fecha de visita, con quién estaba, notas libres), los identificadores vinculados a ella y un enlace al mapa en vivo. En modo Google la tarjeta también muestra los detalles de lugar que Google tenga registrados (valoración, horarios, teléfono, sitio web).
 
-A "Connect pins" toggle in the sidebar draws a dashed line between pins in the order they were dropped. Line color is customizable.
+Un interruptor "Conectar puntos" en la barra lateral dibuja una línea discontinua entre las marcas en el orden en que se colocaron. El color de la línea es personalizable.
 
-### Cross-linking the two tabs
+### Enlace cruzado entre las dos pestañas
 
-Pins can be linked to one or more identifiers, each link with a short note ("checked in on IG", "registered owner", "previous address"). Click an identifier chip in a pin's card to jump to the Info tab with that node highlighted. Hover an identifier in the Info-tab sidebar and the pins linked to it pulse on the map.
+Las marcas pueden vincularse a uno o varios identificadores, cada enlace con una nota corta ("check-in en IG", "titular registrado", "dirección anterior"). Haz clic en una etiqueta de identificador en la tarjeta de una marca para saltar a la pestaña Información con ese nodo resaltado. Pasa el ratón sobre un identificador en la barra lateral de la pestaña Información y las marcas vinculadas a él parpadean en el mapa.
 
-## Project layout
+## Recolección OSINT automática ⚛
+
+Omega OSINT enriquece **automáticamente** cada identificador que añades,
+consultando fuentes abiertas en segundo plano y adjuntando los hallazgos al
+nodo. Se priorizan fuentes **gratuitas y sin clave**.
+
+### Cómo funciona
+
+- Al crear un identificador con datos consultables (correo, usuario, teléfono,
+  VIN o nombre), el motor lanza los proveedores aplicables y guarda los
+  resultados en el propio identificador (se exportan con el `.osint.json`).
+- En la pestaña **Información** verás una barra con el estado del proxy, el
+  interruptor **Auto** y el botón **Enriquecer todo**. Cada identificador
+  muestra una insignia con el número de hallazgos o un aviso de brechas.
+- Abre un identificador para ver el panel completo: cuentas y perfiles,
+  brechas de datos, atributos detectados y pivotes de búsqueda. Puedes
+  **re-enriquecer** en cualquier momento.
+
+### Fuentes que funcionan solo en el navegador (sin instalar nada)
+
+| Fuente | Para qué | Coste |
+|:---|:---|:---|
+| **GitHub** | Perfil + sitio/Twitter vinculados + **correos reales de commits públicos** | Gratis, sin clave |
+| **Keybase** | Pruebas sociales verificadas (Twitter, Reddit, webs…) + cripto | Gratis, sin clave |
+| **Gravatar** | Avatar + perfil público con cuentas sociales vinculadas | Gratis, sin clave |
+| **Hacker News / Chess.com** | Perfiles de usuario (karma, país, antigüedad, bio) | Gratis, sin clave |
+| **XposedOrNot** | Brechas de datos por correo | Gratis, sin clave |
+| **DNS-over-HTTPS + RDAP** | Validez del dominio (MX), tipo (desechable/gratuito) y registro | Gratis, sin clave |
+| **libphonenumber** | País, prefijo y tipo de línea (100% local, no envía nada) | Gratis |
+| **NHTSA vPIC** | Decodificación de VIN (marca, modelo, año, motor…) | Gratis, sin clave |
+| **ipinfo.io** | Geolocalización de IP (ciudad, organización/ASN, host) | Gratis, sin clave |
+| **Bitcoin / Ethereum** | Saldo y nº de transacciones de una dirección detectada | Gratis, sin clave |
+| **Wayback Machine** | Instantánea archivada del perfil o sitio web | Gratis, sin clave |
+| **Perfiles de usuario** | URL canónica + el mismo handle en 20+ plataformas | Gratis |
+| **Pivotes** | Google dorks, HIBP, Epieos, IntelX, Truecaller, TruePeopleSearch… | Gratis |
+
+### Proxy local opcional (desbloquea más)
+
+Algunas comprobaciones (verificación **real** de qué perfiles existen, estilo
+WhatsMyName, y APIs con clave como HaveIBeenPwned) no pueden hacerse desde el
+navegador por CORS. Para ellas hay un pequeño proxy **sin dependencias**:
+
+```bash
+cd server
+npm start            # arranca en http://localhost:8787
+# con claves opcionales (HIBP y/o token de GitHub):
+cp .env.example .env  # rellena HIBP_API_KEY y/o GITHUB_TOKEN
+npm run start:env
+```
+
+Claves opcionales del proxy (todas gratuitas o con plan gratuito):
+
+| Variable | Para qué |
+|:---|:---|
+| `GITHUB_TOKEN` | Sube la API de GitHub de **60 a 5.000 peticiones/hora**. Crea un token *classic* sin permisos en <https://github.com/settings/tokens> (solo se leen datos públicos). |
+| `HIBP_API_KEY` | Usa HaveIBeenPwned para las brechas; si no está, se usa XposedOrNot (gratis). |
+
+Con el proxy activo también se habilitan la verificación real de usuarios y la
+geolocalización de IP por `ip-api` (que el navegador no puede hacer por
+restricciones de contenido mixto).
+
+La app detecta el proxy automáticamente; la barra de enriquecimiento muestra
+**«Proxy activo»** en verde. Si no está, todo sigue funcionando con las fuentes
+del navegador. El proxy corre en tu máquina, no persiste nada y las claves
+viven solo en variables de entorno.
+
+> **Uso responsable.** Esta automatización consulta servicios de terceros con
+> los identificadores del objetivo. Úsala solo en investigaciones autorizadas y
+> respeta los términos de servicio y los límites de tasa de cada fuente.
+
+## Estructura del proyecto
 
 ```
 src/
-  components/                 UI components (tabs, modals, pickers)
-  context/                    ProjectContext, NodeHistoryContext, NavigationContext, …
+  components/                 Componentes de UI (pestañas, modales, selectores)
+  context/                    ProjectContext, EnrichmentContext, NavigationContext, …
+  enrichment/                 Motor de recolección OSINT
+    engine.js                 orquestador (concurrencia, dedupe, orden)
+    providers.js              proveedores (Gravatar, brechas, teléfono, VIN, usuarios, pivotes)
+    platforms.js              catálogo de plataformas + sitios de comprobación
+    extract.js                extractores de datos del identificador
+    emailData.js              clasificación de dominios de correo (local)
+    proxy.js                  detección y acceso al proxy local
   images/
-    icons/                    place-type pin icons (light + dark)
-    node_icons/               brand icons for identifiers
-  styles/                     global + theme CSS
+    icons/                    iconos de marca por tipo de lugar (claro + oscuro)
+    node_icons/               iconos de marca para identificadores
+  styles/                     CSS global + de temas
   utils/                      projectIO, customIcons, appConfig, recentProjects
-  identifierTypes.js          identifier type registry + resolvers
-  identifierIcons.js          identifier brand-icon registry
-  mapIcons.js                 place-type icon registry + Google-types mapping
-  pinColors.js                pin color palette
-  App.jsx                     landing ↔ project view gate
-  main.jsx                    provider stack + root render
+  identifierTypes.js          registro de tipos de identificador + resolvers
+  mapIcons.js                 registro de iconos por tipo de lugar + mapeo de tipos de Google
+  pinColors.js                paleta de colores de marcas
+  App.jsx                     puerta entre inicio ↔ vista de proyecto
+  main.jsx                    pila de proveedores + render raíz
+server/                       Proxy local opcional (Node, sin dependencias)
+  index.js                    servidor HTTP (verificación de usuarios, brechas)
+  sites.js                    lista de sitios para verificación de nombres
 public/
-  app.config.example.json     template for your API key (committed)
-  app.config.json             your real key (gitignored)
+  app.config.example.json     plantilla para tu clave de API (versionada)
+  app.config.json             tu clave real (en gitignore)
 ```
 
-## Privacy
+## Privacidad
 
-There's no backend and no analytics. In Google mode the only outbound calls are the tile/Places API requests the browser makes with your own key. In OpenStreetMap mode they go to openstreetmap.org for tiles and nominatim.openstreetmap.org for search — same requests you'd make using their sites directly.
+No hay backend ni analíticas. En modo Google las únicas llamadas salientes son las peticiones de teselas/Places API que el navegador hace con tu propia clave. En modo OpenStreetMap van a openstreetmap.org para las teselas y a nominatim.openstreetmap.org para la búsqueda — las mismas peticiones que harías usando sus sitios directamente.
 
-Your settings and custom icon library live in `localStorage` on this browser. Project files (`*.osint.json`) live on whatever disk you saved them to. To wipe everything, clear site data for the origin you're running on and delete the `.osint.json` files.
+Tus ajustes y tu biblioteca de iconos personalizados viven en `localStorage` de este navegador. Los archivos de proyecto (`*.osint.json`) viven en el disco donde los guardaste. Para borrar todo, limpia los datos del sitio del origen en el que lo ejecutas y elimina los archivos `.osint.json`.
 
-The repo's `.gitignore` keeps `app.config.json` and `*.osint.json` out of commits, so accidentally working inside the cloned folder won't leak your key or your research.
+El `.gitignore` del repo mantiene `app.config.json` y `*.osint.json` fuera de los commits, así que trabajar por accidente dentro de la carpeta clonada no filtrará tu clave ni tu investigación.
 
-## License
+## Licencia
 
 [GPL-3.0](LICENSE).
 
-## Contributing
+## Contribuir
 
-PRs welcome. The only hard rule is: don't add anything that ships data off the user's machine. No analytics, no remote sync, no third-party tracking. If you're not sure whether something crosses that line, open an issue first.
+Los PR son bienvenidos. La única regla estricta es: no añadas nada que envíe datos fuera de la máquina del usuario. Sin analíticas, sin sincronización remota, sin rastreo de terceros. Si no estás seguro de si algo cruza esa línea, abre primero una issue.
 
 <br>
 <div text-align="left">

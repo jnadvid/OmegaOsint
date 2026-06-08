@@ -44,8 +44,8 @@ export function clearAllSavedData({ overrideFileGoogleConfig = false } = {}) {
 
 /** Human-readable list of what gets wiped — used in confirm dialogs. */
 export const CLEAR_ALL_SUMMARY = [
-  'Google Maps Map ID and map provider choice',
-  'Custom identifier icons you uploaded',
-  'Continue-recent project snapshots',
-  'Light/dark theme preference',
+  'El Map ID de Google Maps y la elección de proveedor de mapa',
+  'Los iconos de identificadores que hayas subido',
+  'Las instantáneas de proyectos recientes',
+  'La preferencia de tema claro/oscuro',
 ];

@@ -9,6 +9,7 @@ import { getPinColor } from '../pinColors.js';
 import IdentifierBadge from './IdentifierBadge.jsx';
 import IconPicker from './IconPicker.jsx';
 import LinkPicker from './LinkPicker.jsx';
+import EnrichmentPanel from './EnrichmentPanel.jsx';
 import './IdentifierModal.css';
 
 function buildEmptyFields(typeKey) {
@@ -118,7 +119,7 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
     if (!primaryValue || !String(primaryValue).trim()) {
       const def = getTypeDef(typeKey);
       const primaryField = def.fields.find((f) => f.primary);
-      setError(`${primaryField?.label ?? 'Primary field'} is required.`);
+      setError(`${primaryField?.label ?? 'El campo principal'} es obligatorio.`);
       formScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -203,12 +204,12 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
           label:
             p.label?.trim() ||
             p.address?.trim() ||
-            `Pin ${idx + 1}`,
+            `Punto ${idx + 1}`,
           secondary:
             p.label && p.address
               ? p.address
               : `${p.lat.toFixed(4)}, ${p.lng.toFixed(4)}`,
-          group: 'Locations',
+          group: 'Ubicaciones',
         };
       }),
     [pins],
@@ -222,6 +223,12 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
 
   const def = typeKey ? getTypeDef(typeKey) : null;
 
+  // Identificador "en vivo" desde el estado del proyecto, para que el panel de
+  // enriquecimiento refleje los hallazgos que llegan en segundo plano.
+  const liveIdentifier = editing
+    ? (project?.identifiers ?? []).find((i) => i.id === initial.id) ?? initial
+    : null;
+
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
       <div
@@ -231,22 +238,22 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
         {stage === 'picker' ? (
           <>
             <div className="modal-header">
-              <h2>Add identifier</h2>
+              <h2>Añadir identificador</h2>
               <button
                 type="button"
                 className="icon-btn"
                 onClick={onClose}
-                aria-label="Close"
+                aria-label="Cerrar"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
               </button>
             </div>
-            <p className="modal-sub">Pick a category and type for this piece of information.</p>
+            <p className="modal-sub">Elige una categoría y un tipo para esta información.</p>
 
             <input
               type="text"
               autoFocus
-              placeholder="Search types…"
+              placeholder="Buscar tipos…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="type-search"
@@ -254,7 +261,7 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
 
             <div className="type-picker">
               {filteredCategories.length === 0 ? (
-                <div className="empty-state">No types match "{search}".</div>
+                <div className="empty-state">Ningún tipo coincide con "{search}".</div>
               ) : (
                 filteredCategories.map((cat) => (
                   <section key={cat.key} className="type-category">
@@ -289,8 +296,8 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                       setStage('picker');
                       setError('');
                     }}
-                    aria-label="Back to type picker"
-                    title="Back"
+                    aria-label="Volver al selector de tipos"
+                    title="Atrás"
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18 9 12l6-6"/></svg>
                   </button>
@@ -299,8 +306,8 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                   type="button"
                   className="form-title-icon"
                   onClick={() => setIconPickerOpen(true)}
-                  title="Change icon"
-                  aria-label="Change icon"
+                  title="Cambiar icono"
+                  aria-label="Cambiar icono"
                 >
                   <IdentifierBadge
                     typeKey={typeKey}
@@ -312,14 +319,14 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                   </span>
                 </button>
                 <h2>
-                  {editing ? 'Edit' : 'New'} {def.label.toLowerCase()}
+                  {editing ? 'Editar' : 'Añadir'} {def.label.toLowerCase()}
                 </h2>
               </div>
               <button
                 type="button"
                 className="icon-btn"
                 onClick={onClose}
-                aria-label="Close"
+                aria-label="Cerrar"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
               </button>
@@ -342,19 +349,19 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                 </div>
               ))}
               <div className="field">
-                <label htmlFor="field-notes">Notes</label>
+                <label htmlFor="field-notes">Notas</label>
                 <textarea
                   id="field-notes"
                   rows={3}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Anything else worth recording…"
+                  placeholder="Cualquier otra cosa que merezca registrarse…"
                 />
               </div>
 
               {editing && (
                 <div className="field">
-                  <label>Visited locations</label>
+                  <label>Ubicaciones visitadas</label>
                   <div className="link-chips">
                     {stagedPins.map((p) => {
                       const c = getPinColor(p.color);
@@ -362,7 +369,7 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                       const label =
                         p.label?.trim() ||
                         p.address?.trim() ||
-                        `Pin ${idx ?? ''}`;
+                        `Punto ${idx ?? ''}`;
                       const context = stagedLinks.get(p.id) ?? '';
                       const isExpanded = expandedChip === p.id;
                       return (
@@ -378,8 +385,8 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                             }
                             title={
                               context
-                                ? `Context: ${context}`
-                                : 'Click to add context'
+                                ? `Contexto: ${context}`
+                                : 'Clic para añadir contexto'
                             }
                           >
                             <span
@@ -403,8 +410,8 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                             type="button"
                             className="link-chip-remove"
                             onClick={() => toggleStagedPin(p.id)}
-                            aria-label="Remove link"
-                            title="Remove link"
+                            aria-label="Quitar vínculo"
+                            title="Quitar vínculo"
                           >
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
                           </button>
@@ -413,7 +420,7 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                               type="text"
                               autoFocus
                               className="link-chip-context-input"
-                              placeholder="Context, e.g. checked-in on IG"
+                              placeholder="Contexto, p. ej. check-in en IG"
                               value={context}
                               onChange={(e) =>
                                 setStagedPinContext(p.id, e.target.value)
@@ -438,19 +445,23 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                       onClick={() => setPickerOpen(true)}
                     >
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-                      Link location
+                      Vincular ubicación
                     </button>
                   </div>
                 </div>
+              )}
+
+              {editing && liveIdentifier && (
+                <EnrichmentPanel identifier={liveIdentifier} />
               )}
             </div>
 
             <div className="modal-actions">
               <button type="button" className="btn btn-ghost" onClick={onClose}>
-                Cancel
+                Cancelar
               </button>
               <button type="submit" className="btn btn-primary">
-                {editing ? 'Save changes' : 'Add identifier'}
+                {editing ? 'Guardar cambios' : 'Añadir identificador'}
               </button>
             </div>
           </form>
@@ -458,12 +469,12 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
       </div>
       {pickerOpen && (
         <LinkPicker
-          title="Link locations"
+          title="Vincular ubicaciones"
           items={pinPickerItems}
           selectedIds={stagedPinIdSet}
           onToggle={toggleStagedPin}
           onClose={() => setPickerOpen(false)}
-          emptyText="No pins yet. Drop some on the Map tab."
+          emptyText="Aún no hay puntos. Marca algunos en la pestaña Mapa."
         />
       )}
       {iconPickerOpen && typeKey && (

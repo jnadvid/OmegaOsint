@@ -94,7 +94,7 @@ export default function PinInfoWindow({ pin, index, onClose, onEdit }) {
     pin.label?.trim() ||
     placeDetails?.name ||
     pin.address?.trim() ||
-    `Pin ${index}`;
+    `Punto ${index}`;
   const address = pin.address?.trim() || placeDetails?.formatted_address || '';
 
   const googleMapsUrl =
@@ -134,7 +134,7 @@ export default function PinInfoWindow({ pin, index, onClose, onEdit }) {
         </div>
 
         {loading && (
-          <div className="pin-info-loading">Loading place info…</div>
+          <div className="pin-info-loading">Cargando información del lugar…</div>
         )}
 
         {placeDetails && (
@@ -166,7 +166,7 @@ export default function PinInfoWindow({ pin, index, onClose, onEdit }) {
                   }`}
                 >
                   <span className="status-dot" />
-                  {isOpenNow ? 'Open now' : 'Closed now'}
+                  {isOpenNow ? 'Abierto ahora' : 'Cerrado ahora'}
                 </span>
               </div>
             )}
@@ -199,13 +199,13 @@ export default function PinInfoWindow({ pin, index, onClose, onEdit }) {
           <div className="pin-info-section pin-info-custom">
             {pin.visitedAt?.trim?.() && (
               <div className="pin-info-row">
-                <span className="pin-info-field-label">Visited:</span>
+                <span className="pin-info-field-label">Visitado:</span>
                 <span>{pin.visitedAt}</span>
               </div>
             )}
             {pin.withWho?.trim?.() && (
               <div className="pin-info-row">
-                <span className="pin-info-field-label">With:</span>
+                <span className="pin-info-field-label">Con:</span>
                 <span>{pin.withWho}</span>
               </div>
             )}
@@ -217,13 +217,13 @@ export default function PinInfoWindow({ pin, index, onClose, onEdit }) {
 
         {placesUnavailable && pin.placeId && (
           <div className="pin-info-section pin-info-muted small">
-            Google place details unavailable.
+            Detalles del lugar de Google no disponibles.
           </div>
         )}
 
         {linkedEntries.length > 0 && (
           <div className="pin-info-section pin-info-links">
-            <div className="pin-info-field-label">Linked to</div>
+            <div className="pin-info-field-label">Vinculado a</div>
             <div className="pin-info-link-chips">
               {linkedEntries.map(({ link, identifier: i }) => (
                 <button
@@ -237,7 +237,7 @@ export default function PinInfoWindow({ pin, index, onClose, onEdit }) {
                   }}
                   onMouseEnter={() => setHoveredIdentifierId(i.id)}
                   onMouseLeave={() => setHoveredIdentifierId(null)}
-                  title={`Open ${getTypeDef(i.type).label} in Information tab`}
+                  title={`Abrir ${getTypeDef(i.type).label} en la pestaña Información`}
                 >
                   <IdentifierBadge
                     typeKey={i.type}
@@ -269,7 +269,7 @@ export default function PinInfoWindow({ pin, index, onClose, onEdit }) {
             className="btn btn-primary btn-sm"
             onClick={onEdit}
           >
-            Edit details
+            Editar detalles
           </button>
           <a
             href={googleMapsUrl}
@@ -277,7 +277,7 @@ export default function PinInfoWindow({ pin, index, onClose, onEdit }) {
             rel="noreferrer"
             className="btn btn-secondary btn-sm pin-info-external"
           >
-            Open in Google Maps
+            Abrir en Google Maps
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg>
           </a>
         </div>

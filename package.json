@@ -1,9 +1,9 @@
 {
-  "name": "osint-mapping-tool",
+  "name": "omega-osint",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Free, open-source OSINT tool for mapping target information and visited locations.",
+  "description": "Omega OSINT — herramienta libre y de código abierto para mapear información de objetivos y ubicaciones visitadas.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -13,6 +13,7 @@
     "@vis.gl/react-google-maps": "^1.8.3",
     "@xyflow/react": "^12.3.5",
     "leaflet": "^1.9.4",
+    "libphonenumber-js": "^1.11.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-leaflet": "^4.2.1"

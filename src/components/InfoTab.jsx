@@ -23,6 +23,8 @@ import IdentifierBadge from './IdentifierBadge.jsx';
 import IdentifierModal from './IdentifierModal.jsx';
 import IdentifierNode from './IdentifierNode.jsx';
 import NodeCreationMenu from './NodeCreationMenu.jsx';
+import EnrichmentToolbar from './EnrichmentToolbar.jsx';
+import EnrichmentBadge from './EnrichmentBadge.jsx';
 import './InfoTab.css';
 
 const NODE_TYPES = { identifier: IdentifierNode };
@@ -348,7 +350,7 @@ function InfoTabInner() {
 
   const handleDelete = (e, id, label) => {
     e.stopPropagation();
-    if (!confirm(`Delete "${label}"? You can press Ctrl+Z to restore.`)) return;
+    if (!confirm(`¿Eliminar "${label}"? Puedes pulsar Ctrl+Z para restaurar.`)) return;
     const ident = (project?.identifiers ?? []).find((i) => i.id === id);
     const conns = (project?.connections ?? []).filter(
       (c) => c.source === id || c.target === id,
@@ -431,17 +433,18 @@ function InfoTabInner() {
     <div className="info-tab">
       <aside className="info-sidebar">
         <div className="sidebar-header">
-          <h3>Identifiers</h3>
+          <h3>Identificadores</h3>
           <button className="btn btn-primary btn-sm" onClick={openAdd}>
-            + Add
+            + Añadir
           </button>
         </div>
+        <EnrichmentToolbar />
         {identifiers.length === 0 ? (
           <div className="empty-state">
-            <p>No identifiers yet.</p>
+            <p>Aún no hay identificadores.</p>
             <p className="empty-hint">
-              Add social profiles, phones, emails, names, vehicles, and custom
-              fields here.
+              Añade aquí perfiles sociales, teléfonos, correos, nombres,
+              vehículos y campos personalizados.
             </p>
           </div>
         ) : (
@@ -475,12 +478,13 @@ function InfoTabInner() {
                       <div className="identifier-secondary">{secondary}</div>
                     )}
                   </div>
+                  <EnrichmentBadge identifier={id} />
                   <button
                     type="button"
                     className="identifier-delete"
                     onClick={(e) => handleDelete(e, id.id, display)}
-                    aria-label={`Delete ${display}`}
-                    title="Delete"
+                    aria-label={`Eliminar ${display}`}
+                    title="Eliminar"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
@@ -523,33 +527,33 @@ function InfoTabInner() {
 
         {identifiers.length === 0 && (
           <div className="canvas-hint">
-            <h3>Empty canvas</h3>
+            <h3>Lienzo vacío</h3>
             <p>
-              Add identifiers from the sidebar, or <strong>right-click</strong>{' '}
-              on the canvas to add one here. They'll appear as nodes you can
-              drag and connect.
+              Añade identificadores desde la barra lateral, o{' '}
+              <strong>haz clic derecho</strong> en el lienzo para añadir uno
+              aquí. Aparecerán como nodos que puedes arrastrar y conectar.
             </p>
             <p className="canvas-hint-tips">
-              <strong>Drag a handle</strong> to another node to connect them, or
-              to empty space to add a new node.<br />
-              <strong>Double-click</strong> a node to edit.<br />
-              <strong>Select</strong> and press <kbd>Delete</kbd> /{' '}
-              <kbd>Backspace</kbd> to remove a node or edge.
+              <strong>Arrastra un conector</strong> hacia otro nodo para
+              unirlos, o a un espacio vacío para crear un nodo nuevo.<br />
+              <strong>Doble clic</strong> en un nodo para editarlo.<br />
+              <strong>Selecciona</strong> y pulsa <kbd>Supr</kbd> /{' '}
+              <kbd>Retroceso</kbd> para quitar un nodo o una conexión.
             </p>
           </div>
         )}
 
         {identifiers.length > 0 && (
           <div className="canvas-tips" aria-hidden="true">
-            <span><kbd>Drag handle</kbd> → new node</span>
+            <span><kbd>Arrastrar conector</kbd> → nodo nuevo</span>
             <span className="canvas-tips-sep">·</span>
-            <span><kbd>Right-click</kbd> menu</span>
+            <span><kbd>Clic derecho</kbd> menú</span>
             <span className="canvas-tips-sep">·</span>
-            <span><kbd>⌘D</kbd> duplicate</span>
+            <span><kbd>⌘D</kbd> duplicar</span>
             <span className="canvas-tips-sep">·</span>
             <span><kbd>⌘Z</kbd> / <kbd>⌘Y</kbd></span>
             <span className="canvas-tips-sep">·</span>
-            <span><kbd>Del</kbd> remove</span>
+            <span><kbd>Supr</kbd> quitar</span>
           </div>
         )}
       </div>

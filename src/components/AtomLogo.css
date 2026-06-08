@@ -1,0 +1,54 @@
+.atom-logo {
+  display: block;
+  overflow: visible;
+}
+
+.atom-logo .atom-orbit {
+  transform-origin: 12px 12px;
+}
+
+.atom-logo .atom-nucleus {
+  /* Latido sutil del núcleo */
+  transform-origin: 12px 12px;
+}
+
+/* Órbitas girando — ilusión de átomo en 3D. Cada órbita lleva su propio
+   electrón, así que al girar el grupo el electrón recorre la elipse. */
+.atom-animated .atom-orbit-1 {
+  animation: atom-spin-1 6s linear infinite;
+}
+.atom-animated .atom-orbit-2 {
+  animation: atom-spin-2 9s linear infinite;
+}
+.atom-animated .atom-orbit-3 {
+  animation: atom-spin-3 12s linear infinite;
+}
+.atom-animated .atom-nucleus {
+  animation: atom-pulse 3s ease-in-out infinite;
+}
+
+@keyframes atom-spin-1 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes atom-spin-2 {
+  from { transform: rotate(60deg); }
+  to { transform: rotate(420deg); }
+}
+@keyframes atom-spin-3 {
+  from { transform: rotate(120deg); }
+  to { transform: rotate(480deg); }
+}
+@keyframes atom-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.18); opacity: 0.85; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atom-animated .atom-orbit-1,
+  .atom-animated .atom-orbit-2,
+  .atom-animated .atom-orbit-3,
+  .atom-animated .atom-nucleus {
+    animation: none;
+  }
+}

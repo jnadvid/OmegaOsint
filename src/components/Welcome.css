@@ -7,7 +7,7 @@
   flex-direction: column;
   background:
     radial-gradient(1100px 600px at 20% -10%, var(--accent-soft), transparent 60%),
-    radial-gradient(900px 500px at 110% 110%, var(--accent-soft), transparent 60%),
+    radial-gradient(900px 500px at 110% 110%, rgba(34, 211, 238, 0.1), transparent 60%),
     var(--bg-0);
 }
 
@@ -33,21 +33,21 @@
 }
 
 .welcome-logo {
-  width: 76px;
-  height: 76px;
-  border-radius: 20px;
+  width: 84px;
+  height: 84px;
+  border-radius: 24px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  background: var(--quantum-gradient);
   color: #fff;
   margin-bottom: 18px;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), var(--quantum-glow);
 }
 
 .welcome-title {
   margin: 0 0 8px;
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }

@@ -32,7 +32,7 @@ export default function ClearAllDataButton({ variant = 'block' }) {
     <>
       <div className={`clear-all ${variant}`}>
         {variant === 'block' && (
-          <div className="clear-all-label">Reset this browser</div>
+          <div className="clear-all-label">Restablecer este navegador</div>
         )}
         <button
           type="button"
@@ -43,12 +43,13 @@ export default function ClearAllDataButton({ variant = 'block' }) {
           }
           onClick={() => setConfirming(true)}
         >
-          Clear all saved data
+          Borrar todos los datos guardados
         </button>
         {variant === 'block' && (
           <p className="clear-all-hint">
-            Wipes settings, custom icons, and the Continue-recent list from
-            this browser. Saved project files on disk are untouched.
+            Elimina los ajustes, los iconos personalizados y la lista de
+            recientes de este navegador. Los archivos de proyecto guardados en
+            disco no se tocan.
           </p>
         )}
       </div>
@@ -59,9 +60,9 @@ export default function ClearAllDataButton({ variant = 'block' }) {
           onClick={() => setConfirming(false)}
         >
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Clear all saved data?</h2>
+            <h2>¿Borrar todos los datos guardados?</h2>
             <p className="modal-sub">
-              This wipes everything this browser is holding for the app:
+              Esto elimina todo lo que este navegador guarda de la app:
             </p>
             <ul className="clear-all-list">
               {CLEAR_ALL_SUMMARY.map((line) => (
@@ -76,18 +77,18 @@ export default function ClearAllDataButton({ variant = 'block' }) {
                 onChange={(e) => setAlsoClearApiKey(e.target.checked)}
               />
               <span>
-                <strong>Also clear the Google Maps API key</strong>
+                <strong>Borrar también la clave de API de Google Maps</strong>
                 <span className="clear-all-checkbox-hint">
-                  Hides any key that lives in{' '}
-                  <code>public/app.config.json</code>. Leaves the file itself
-                  alone — to delete it for good, remove the file by hand.
+                  Oculta cualquier clave que esté en{' '}
+                  <code>public/app.config.json</code>. No toca el archivo en sí
+                  — para eliminarlo del todo, bórralo a mano.
                 </span>
               </span>
             </label>
 
             <p className="modal-sub">
-              Project files you've saved to disk (<code>*.osint.json</code>)
-              are not touched.
+              Los archivos de proyecto que hayas guardado en disco
+              (<code>*.osint.json</code>) no se tocan.
             </p>
             <div className="modal-actions">
               <button
@@ -95,14 +96,14 @@ export default function ClearAllDataButton({ variant = 'block' }) {
                 className="btn btn-ghost"
                 onClick={() => setConfirming(false)}
               >
-                Cancel
+                Cancelar
               </button>
               <button
                 type="button"
                 className="btn btn-danger"
                 onClick={handleConfirm}
               >
-                Yes, clear everything
+                Sí, borrar todo
               </button>
             </div>
           </div>

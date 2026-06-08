@@ -5,7 +5,7 @@ export function createProject({ name, targetName = '', notes = '' }) {
   return {
     schemaVersion: PROJECT_SCHEMA_VERSION,
     id: crypto.randomUUID(),
-    name: name.trim() || 'Untitled Project',
+    name: name.trim() || 'Proyecto sin título',
     createdAt: now,
     updatedAt: now,
     target: {

@@ -38,10 +38,10 @@ export function readProjectFromFile(file) {
 
 function validateProject(obj) {
   if (!obj || typeof obj !== 'object') {
-    throw new Error('Project file is not a valid JSON object.');
+    throw new Error('El archivo de proyecto no es un objeto JSON válido.');
   }
   if (typeof obj.name !== 'string') {
-    throw new Error('Project file is missing a "name".');
+    throw new Error('Al archivo de proyecto le falta un "name".');
   }
   if (obj.schemaVersion !== PROJECT_SCHEMA_VERSION) {
     // Soft accept for now; future migrations can branch here.
